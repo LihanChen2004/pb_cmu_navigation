@@ -129,8 +129,8 @@ private:
       } 
       else{
         transformTfGeom.transform = tf2::toMsg(odomTrans.inverse());
-        transformTfGeom.header.frame_id = "map";
-        transformTfGeom.child_frame_id = "sensor";
+        transformTfGeom.header.frame_id = "sensor";
+        transformTfGeom.child_frame_id = "map";
         transformTfGeom.header.stamp = odom->header.stamp;
         tfBroadcasterPointer->sendTransform(transformTfGeom);
       }
