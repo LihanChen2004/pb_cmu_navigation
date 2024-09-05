@@ -19,7 +19,7 @@ def generate_launch_description():
   gazebo_gui = LaunchConfiguration('gazebo_gui')
   checkTerrainConn = LaunchConfiguration('checkTerrainConn')
   
-  declare_world_name = DeclareLaunchArgument('world_name', default_value='forest', description='')
+  declare_world_name = DeclareLaunchArgument('world_name', default_value='tunnel', description='')
   declare_vehicleHeight = DeclareLaunchArgument('vehicleHeight', default_value='0.75', description='')
   declare_cameraOffsetZ = DeclareLaunchArgument('cameraOffsetZ', default_value='0.0', description='')
   declare_vehicleX = DeclareLaunchArgument('vehicleX', default_value='0.0', description='')
@@ -28,7 +28,7 @@ def generate_launch_description():
   declare_terrainZ = DeclareLaunchArgument('terrainZ', default_value='0.0', description='')
   declare_vehicleYaw = DeclareLaunchArgument('vehicleYaw', default_value='0.0', description='')
   declare_gazebo_gui = DeclareLaunchArgument('gazebo_gui', default_value='false', description='')
-  declare_checkTerrainConn = DeclareLaunchArgument('checkTerrainConn', default_value='true', description='')
+  declare_checkTerrainConn = DeclareLaunchArgument('checkTerrainConn', default_value='false', description='')
   
   start_local_planner = IncludeLaunchDescription(
     FrontendLaunchDescriptionSource(os.path.join(
@@ -58,7 +58,7 @@ def generate_launch_description():
 
   start_vehicle_simulator = IncludeLaunchDescription(
     PythonLaunchDescriptionSource(os.path.join(
-      get_package_share_directory('vehicle_simulator'), 'launch', 'vehicle_simulator.launch')
+      get_package_share_directory('vehicle_simulator'), 'launch', 'vehicle_simulator.launch.py')
     ),
     launch_arguments={
       'world_name': world_name,
