@@ -8,6 +8,12 @@ log/*
 
 .catkin_workspace
 
+.vscode
+
+.cache
+
+__pycache__
+
 *~
 
 .DS_Store
@@ -27,3 +33,6 @@ src/vehicle_simulator/log/*
 !download_environments.sh
 
 !readme.txt
+
+*.gv
+*.pdf

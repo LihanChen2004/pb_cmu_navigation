@@ -49,7 +49,7 @@ void WaypointTool::odomHandler(const nav_msgs::msg::Odometry::ConstSharedPtr odo
   vehicle_z = odom->pose.pose.position.z;
 }
 
-void WaypointTool::onPoseSet(double x, double y, double theta)
+void WaypointTool::onPoseSet(double x, double y, double /*theta*/)
 {
   sensor_msgs::msg::Joy joy;
 
