@@ -50,7 +50,7 @@ double maxYawRate = 45.0;
 double maxSpeed = 1.0;
 double maxAccel = 1.0;
 double switchTimeThre = 1.0;
-double dirDiffThre = 0.1;
+// double dirDiffThre = 0.1;
 double stopDisThre = 0.2;
 double slowDwnDisThre = 1.0;
 bool useInclRateToSlow = false;
@@ -62,8 +62,8 @@ double slowTime2 = 2.0;
 bool useInclToStop = false;
 double inclThre = 45.0;
 double stopTime = 5.0;
-bool noRotAtStop = false;
-bool noRotAtGoal = true;
+// bool noRotAtStop = false;
+// bool noRotAtGoal = true;
 bool autonomyMode = false;
 double autonomySpeed = 1.0;
 double joyToSpeedDelay = 2.0;
@@ -71,6 +71,7 @@ double joyToSpeedDelay = 2.0;
 float joySpeed = 0;
 float joySpeedRaw = 0;
 float joyYaw = 0;
+float desiredYaw = 0;
 int safetyStop = 0;
 
 float vehicleX = 0;
@@ -91,6 +92,7 @@ float vehicleYawRate = 0;
 float vehicleSpeed = 0;
 
 double odomTime = 0;
+bool odomInit = false;
 double joyTime = 0;
 double slowInitTime = 0;
 double stopInitTime = false;
@@ -123,6 +125,11 @@ void odomHandler(const nav_msgs::msg::Odometry::ConstSharedPtr odomIn)
   if ((fabs(odomIn->twist.twist.angular.x) > inclRateThre * PI / 180.0 || fabs(odomIn->twist.twist.angular.y) > inclRateThre * PI / 180.0) && useInclRateToSlow) {
     slowInitTime = rclcpp::Time(odomIn->header.stamp).seconds();
   }
+
+  if (!odomInit) {
+    desiredYaw = yaw;
+    odomInit = true;
+  }
 }
 
 void pathHandler(const nav_msgs::msg::Path::ConstSharedPtr pathIn)
@@ -152,14 +159,14 @@ void joystickHandler(const sensor_msgs::msg::Joy::ConstSharedPtr joy)
   joySpeedRaw = sqrt(joy->axes[3] * joy->axes[3] + joy->axes[4] * joy->axes[4]);
   joySpeed = joySpeedRaw;
   if (joySpeed > 1.0) joySpeed = 1.0;
-  if (joy->axes[4] == 0) joySpeed = 0;
-  joyYaw = joy->axes[3];
-  if (joySpeed == 0 && noRotAtStop) joyYaw = 0;
+  // if (joy->axes[4] == 0) joySpeed = 0;
+  // joyYaw = joy->axes[3];
+  // if (joySpeed == 0 && noRotAtStop) joyYaw = 0;
 
-  if (joy->axes[4] < 0 && !twoWayDrive) {
-    joySpeed = 0;
-    joyYaw = 0;
-  }
+  // if (joy->axes[4] < 0 && !twoWayDrive) {
+  //   joySpeed = 0;
+  //   joyYaw = 0;
+  // }
 
   if (joy->axes[2] > -0.1) {
     autonomyMode = false;
@@ -200,7 +207,7 @@ int main(int argc, char** argv)
   nh->declare_parameter<double>("maxSpeed", maxSpeed);
   nh->declare_parameter<double>("maxAccel", maxAccel);
   nh->declare_parameter<double>("switchTimeThre", switchTimeThre);
-  nh->declare_parameter<double>("dirDiffThre", dirDiffThre);
+  // nh->declare_parameter<double>("dirDiffThre", dirDiffThre);
   nh->declare_parameter<double>("stopDisThre", stopDisThre);
   nh->declare_parameter<double>("slowDwnDisThre", slowDwnDisThre);
   nh->declare_parameter<bool>("useInclRateToSlow", useInclRateToSlow);
@@ -212,8 +219,8 @@ int main(int argc, char** argv)
   nh->declare_parameter<bool>("useInclToStop", useInclToStop);
   nh->declare_parameter<double>("inclThre", inclThre);
   nh->declare_parameter<double>("stopTime", stopTime);
-  nh->declare_parameter<bool>("noRotAtStop", noRotAtStop);
-  nh->declare_parameter<bool>("noRotAtGoal", noRotAtGoal);
+  // nh->declare_parameter<bool>("noRotAtStop", noRotAtStop);
+  // nh->declare_parameter<bool>("noRotAtGoal", noRotAtGoal);
   nh->declare_parameter<bool>("autonomyMode", autonomyMode);
   nh->declare_parameter<double>("autonomySpeed", autonomySpeed);
   nh->declare_parameter<double>("joyToSpeedDelay", joyToSpeedDelay);
@@ -229,7 +236,7 @@ int main(int argc, char** argv)
   nh->get_parameter("maxSpeed", maxSpeed);
   nh->get_parameter("maxAccel", maxAccel);
   nh->get_parameter("switchTimeThre", switchTimeThre);
-  nh->get_parameter("dirDiffThre", dirDiffThre);
+  // nh->get_parameter("dirDiffThre", dirDiffThre);
   nh->get_parameter("stopDisThre", stopDisThre);
   nh->get_parameter("slowDwnDisThre", slowDwnDisThre);
   nh->get_parameter("useInclRateToSlow", useInclRateToSlow);
@@ -241,8 +248,8 @@ int main(int argc, char** argv)
   nh->get_parameter("useInclToStop", useInclToStop);
   nh->get_parameter("inclThre", inclThre);
   nh->get_parameter("stopTime", stopTime);
-  nh->get_parameter("noRotAtStop", noRotAtStop);
-  nh->get_parameter("noRotAtGoal", noRotAtGoal);
+  // nh->get_parameter("noRotAtStop", noRotAtStop);
+  // nh->get_parameter("noRotAtGoal", noRotAtGoal);
   nh->get_parameter("autonomyMode", autonomyMode);
   nh->get_parameter("autonomySpeed", autonomySpeed);
   nh->get_parameter("joyToSpeedDelay", joyToSpeedDelay);
@@ -257,10 +264,9 @@ int main(int argc, char** argv)
 
   auto subStop = nh->create_subscription<std_msgs::msg::Int8>("stop", 5, stopHandler);
 
-  auto pubSpeed = nh->create_publisher<geometry_msgs::msg::TwistStamped>("cmd_vel", 5);
+  auto pubSpeed = nh->create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 5);
 
-  geometry_msgs::msg::TwistStamped cmd_vel;
-  cmd_vel.header.frame_id = "vehicle";
+  geometry_msgs::msg::Twist cmd_vel;
 
   if (autonomyMode) {
     joySpeed = autonomySpeed / maxSpeed;
@@ -308,12 +314,20 @@ int main(int argc, char** argv)
       if (dirDiff > PI) dirDiff -= 2 * PI;
       else if (dirDiff < -PI) dirDiff += 2 * PI;
 
+      desiredYaw += 0.01 * joyYaw;
+      if (desiredYaw > PI) desiredYaw -= 2 * PI;
+      else if (desiredYaw < -PI) desiredYaw += 2 * PI;
+
+      float yawDiff = vehicleYaw - desiredYaw;
+      if (yawDiff > PI) yawDiff -= 2 * PI;
+      else if (yawDiff < -PI) yawDiff += 2 * PI;
+
       if (twoWayDrive) {
         double time = nh->now().seconds();
-        if (fabs(dirDiff) > PI / 2 && navFwd && time - switchTime > switchTimeThre) {
+        if (fabs(yawDiff) > PI / 2 && navFwd && time - switchTime > switchTimeThre) {
           navFwd = false;
           switchTime = time;
-        } else if (fabs(dirDiff) < PI / 2 && !navFwd && time - switchTime > switchTimeThre) {
+        } else if (fabs(yawDiff) < PI / 2 && !navFwd && time - switchTime > switchTimeThre) {
           navFwd = true;
           switchTime = time;
         }
@@ -321,22 +335,21 @@ int main(int argc, char** argv)
 
       float joySpeed2 = maxSpeed * joySpeed;
       if (!navFwd) {
-        dirDiff += PI;
-        if (dirDiff > PI) dirDiff -= 2 * PI;
-        joySpeed2 *= -1;
+        yawDiff += PI;
+        if (yawDiff > PI) yawDiff -= 2 * PI;
       }
 
-      if (fabs(vehicleSpeed) < 2.0 * maxAccel / 100.0) vehicleYawRate = -stopYawRateGain * dirDiff;
-      else vehicleYawRate = -yawRateGain * dirDiff;
+      if (fabs(vehicleSpeed) < 2.0 * maxAccel / 100.0) vehicleYawRate = -stopYawRateGain * yawDiff;
+      else vehicleYawRate = -yawRateGain * yawDiff;
 
       if (vehicleYawRate > maxYawRate * PI / 180.0) vehicleYawRate = maxYawRate * PI / 180.0;
       else if (vehicleYawRate < -maxYawRate * PI / 180.0) vehicleYawRate = -maxYawRate * PI / 180.0;
 
-      if (joySpeed2 == 0 && !autonomyMode) {
-        vehicleYawRate = maxYawRate * joyYaw * PI / 180.0;
-      } else if (pathSize <= 1 || (dis < stopDisThre && noRotAtGoal)) {
-        vehicleYawRate = 0;
-      }
+      // if (joySpeed2 == 0 && !autonomyMode) {
+      //   vehicleYawRate = maxYawRate * joyYaw * PI / 180.0;
+      // } else if (pathSize <= 1 || (dis < stopDisThre && noRotAtGoal)) {
+      //   vehicleYawRate = 0;
+      // }
 
       if (pathSize <= 1) {
         joySpeed2 = 0;
@@ -348,7 +361,7 @@ int main(int argc, char** argv)
       if (odomTime < slowInitTime + slowTime1 && slowInitTime > 0) joySpeed3 *= slowRate1;
       else if (odomTime < slowInitTime + slowTime1 + slowTime2 && slowInitTime > 0) joySpeed3 *= slowRate2;
 
-      if (fabs(dirDiff) < dirDiffThre && dis > stopDisThre) {
+      if (dis > stopDisThre) {
         if (vehicleSpeed < joySpeed3) vehicleSpeed += maxAccel / 100.0;
         else if (vehicleSpeed > joySpeed3) vehicleSpeed -= maxAccel / 100.0;
       } else {
@@ -366,10 +379,14 @@ int main(int argc, char** argv)
 
       pubSkipCount--;
       if (pubSkipCount < 0) {
-        cmd_vel.header.stamp = rclcpp::Time(static_cast<uint64_t>(odomTime * 1e9));
-        if (fabs(vehicleSpeed) <= maxAccel / 100.0) cmd_vel.twist.linear.x = 0;
-        else cmd_vel.twist.linear.x = vehicleSpeed;
-        cmd_vel.twist.angular.z = vehicleYawRate;
+        if (fabs(vehicleSpeed) <= maxAccel / 100.0) {
+          cmd_vel.linear.x = 0;
+          cmd_vel.linear.y = 0;
+        } else {
+          cmd_vel.linear.x = cos(dirDiff) * vehicleSpeed;
+          cmd_vel.linear.y = -sin(dirDiff) * vehicleSpeed;
+        }
+        cmd_vel.angular.z = vehicleYawRate;
         pubSpeed->publish(cmd_vel);
 
         pubSkipCount = pubSkipNum;
