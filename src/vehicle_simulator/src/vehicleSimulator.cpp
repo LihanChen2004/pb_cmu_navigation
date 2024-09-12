@@ -300,10 +300,10 @@ void terrainCloudHandler(const sensor_msgs::msg::PointCloud2::ConstSharedPtr ter
   }
 }
 
-void speedHandler(const geometry_msgs::msg::TwistStamped::ConstSharedPtr speedIn)
+void speedHandler(const geometry_msgs::msg::Twist::ConstSharedPtr speedIn)
 {
-  vehicleSpeed = speedIn->twist.linear.x;
-  vehicleYawRate = speedIn->twist.angular.z;
+  vehicleSpeed = speedIn->linear.x;
+  vehicleYawRate = speedIn->angular.z;
 }
 
 int main(int argc, char** argv)
@@ -357,7 +357,7 @@ int main(int argc, char** argv)
 
   auto subTerrainCloud = nh->create_subscription<sensor_msgs::msg::PointCloud2>("terrain_map", 2, terrainCloudHandler);
 
-  auto subSpeed = nh->create_subscription<geometry_msgs::msg::TwistStamped>("cmd_vel", 5, speedHandler);
+  auto subSpeed = nh->create_subscription<geometry_msgs::msg::Twist>("cmd_vel", 5, speedHandler);
 
   auto pubVehicleOdom = nh->create_publisher<nav_msgs::msg::Odometry>("odometry", 5);
   nav_msgs::msg::Odometry odomData;
