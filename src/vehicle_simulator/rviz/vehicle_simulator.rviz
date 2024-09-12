@@ -3,9 +3,10 @@ Panels:
     Help Height: 0
     Name: Displays
     Property Tree Widget:
-      Expanded: ~
-      Splitter Ratio: 0.729411780834198
-    Tree Height: 441
+      Expanded:
+        - /Global Options1
+      Splitter Ratio: 0.5647059082984924
+    Tree Height: 667
   - Class: rviz_common/Selection
     Name: Selection
   - Class: rviz_common/Tool Properties
@@ -21,11 +22,7 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: FreePaths
-Preferences:
-  PromptSaveOnExit: true
-Toolbars:
-  toolButtonStyle: 2
+    SyncSource: ""
 Visualization Manager:
   Class: ""
   Displays:
@@ -33,22 +30,8 @@ Visualization Manager:
       Enabled: true
       Length: 1.5
       Name: Vehicle
-      Radius: 0.20000000298023224
-      Reference Frame: vehicle
-      Value: true
-    - Class: rviz_default_plugins/Image
-      Enabled: true
-      Max Value: 1
-      Median window: 5
-      Min Value: 0
-      Name: Image
-      Normalize Range: true
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: /camera/image_raw
+      Radius: 0.2
+      Reference Frame: chassis
       Value: true
     - Alpha: 0.20000000298023224
       Autocompute Intensity Bounds: true
@@ -80,10 +63,10 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: registered_scan
+        Value: <robot_namespace>/registered_scan
       Use Fixed Frame: true
       Use rainbow: true
-      Value: false
+      Value: true
     - Alpha: 0.20000000298023224
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
@@ -114,10 +97,10 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: sensor_scan
+        Value: <robot_namespace>/sensor_scan
       Use Fixed Frame: true
       Use rainbow: true
-      Value: true
+      Value: false
     - Alpha: 1
       Autocompute Intensity Bounds: false
       Autocompute Value Bounds:
@@ -148,7 +131,7 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: terrain_map
+        Value: <robot_namespace>/terrain_map
       Use Fixed Frame: true
       Use rainbow: true
       Value: false
@@ -182,7 +165,7 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: terrain_map_ext
+        Value: <robot_namespace>/terrain_map_ext
       Use Fixed Frame: true
       Use rainbow: true
       Value: false
@@ -203,11 +186,16 @@ Visualization Manager:
         Z: 0
       Pose Color: 255; 85; 255
       Pose Style: None
-      Radius: 0.029999999329447746
+      Radius: 0.03
       Shaft Diameter: 0.10000000149011612
       Shaft Length: 0.10000000149011612
-      Topic: path
-      Unreliable: false
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: <robot_namespace>/path
       Value: true
     - Alpha: 1
       Autocompute Intensity Bounds: false
@@ -239,7 +227,7 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: free_paths
+        Value: <robot_namespace>/free_paths
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
@@ -249,22 +237,27 @@ Visualization Manager:
       Enabled: true
       History Length: 1
       Name: Waypoint
-      Radius: 1.2000000476837158
+      Radius: 0.3
       Topic:
         Depth: 5
         Durability Policy: Volatile
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: way_point
+        Value: <robot_namespace>/way_point
       Value: true
     - Alpha: 1
       Class: rviz_default_plugins/Polygon
       Color: 0; 255; 0
       Enabled: true
       Name: Boundary
-      Topic: navigation_boundary
-      Unreliable: false
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: <robot_namespace>/navigation_boundary
       Value: true
     - Alpha: 1
       Autocompute Intensity Bounds: true
@@ -296,7 +289,7 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: added_obstacles
+        Value: <robot_namespace>/added_obstacles
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
@@ -330,10 +323,10 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: overall_map
+        Value: <robot_namespace>/overall_map
       Use Fixed Frame: true
       Use rainbow: true
-      Value: true
+      Value: false
     - Alpha: 0.20000000298023224
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
@@ -364,10 +357,10 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: explored_areas
+        Value: <robot_namespace>/explored_areas
       Use Fixed Frame: true
       Use rainbow: true
-      Value: true
+      Value: false
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
@@ -398,7 +391,7 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: trajectory
+        Value: <robot_namespace>/trajectory
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
@@ -416,7 +409,7 @@ Visualization Manager:
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: waypoint
+        Value: <robot_namespace>/waypoint
   Transformation:
     Current:
       Class: rviz_default_plugins/TF
@@ -431,9 +424,9 @@ Visualization Manager:
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.0
-        Y: 0.0
-        Z: 0.0
+        X: 0
+        Y: 0
+        Z: 0
       Focal Shape Fixed Size: false
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
@@ -450,9 +443,7 @@ Window Geometry:
   Height: 818
   Hide Left Dock: false
   Hide Right Dock: false
-  Image:
-    collapsed: false
-  QMainWindow State: 000000ff00000000fd000000040000000000000156000003a5fc020000000bfb0000001200530065006c0065006300740069006f006e000000003d000001b80000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073000000003d000003a5000000c900fffffffb0000000a0049006d00610067006503000005ea0000026d0000019a000000fefb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000001400430061006d0065007200610049006e006900740100000474000000160000000000000000fb0000000a0049006d00610067006503000004000000035600000199000000fd000000010000010f000003a7fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073000000003d000003a7000000a400fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e100000197000000030000073d0000003efc0100000002fb0000000800540069006d006500000000000000073d000004f300fffffffb0000000800540069006d00650100000000000004500000000000000000000005a7000002d800000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd00000004000000000000015f000002d8fc020000000bfb0000001200530065006c0065006300740069006f006e000000003d000001b80000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003d000002d8000000c900fffffffb0000000a0049006d00610067006502000005ea0000026d0000019a000000fefb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000001400430061006d0065007200610049006e006900740100000474000000160000000000000000fb0000000a0049006d00610067006503000004000000035600000199000000fd000000010000010f000003a7fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073000000003d000003a7000000a400fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e100000197000000030000073d0000003efc0100000002fb0000000800540069006d006500000000000000073d000002fb00fffffffb0000000800540069006d0065010000000000000450000000000000000000000442000002d800000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Time:
@@ -462,5 +453,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1447
-  X: 51
+  X: 70
   Y: 27

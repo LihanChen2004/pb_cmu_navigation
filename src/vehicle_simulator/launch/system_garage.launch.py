@@ -5,7 +5,8 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, TimerAction
 from launch.launch_description_sources import PythonLaunchDescriptionSource, PythonLaunchDescriptionSource
 from launch_ros.actions import Node
-from launch.substitutions import LaunchConfiguration 
+from launch.substitutions import LaunchConfiguration
+from nav2_common.launch import ReplaceString
 
 def generate_launch_description():
   namespace = LaunchConfiguration('namespace')
@@ -32,6 +33,8 @@ def generate_launch_description():
   declare_gazebo_gui = DeclareLaunchArgument('gazebo_gui', default_value='false', description='')
   declare_checkTerrainConn = DeclareLaunchArgument('checkTerrainConn', default_value='true', description='')
 
+  rviz_config_file = os.path.join(get_package_share_directory('vehicle_simulator'), 'rviz', 'vehicle_simulator.rviz')
+
   # Map fully qualified names to relative ones so the node's namespace can be prepended.
   # In case of the transforms (tf), currently, there doesn't seem to be a better alternative
   # https://github.com/ros/geometry2/issues/32
@@ -39,6 +42,20 @@ def generate_launch_description():
   # TODO(orduno) Substitute with `PushNodeRemapping`
   #              https://github.com/ros2/launch_ros/issues/56
   remappings = [("/tf", "tf"), ("/tf_static", "tf_static")]
+
+  namespaced_rviz_config_file = ReplaceString(
+      source_file=rviz_config_file,
+      replacements={"<robot_namespace>": ("/", namespace)},
+  )
+
+  start_sim_pcd_transform = Node(
+    package='vehicle_simulator', 
+    executable='transform_pcd_node',
+    name='sim_transform_pcd',
+    namespace=namespace,
+    remappings=remappings,
+    output='screen',
+  )
 
   start_loam_interface = IncludeLaunchDescription(
     PythonLaunchDescriptionSource(os.path.join(
@@ -125,17 +142,17 @@ def generate_launch_description():
   		}]
   )
 
-  rviz_config_file = os.path.join(get_package_share_directory('vehicle_simulator'), 'rviz', 'vehicle_simulator.rviz')
   start_rviz = Node(
     namespace=namespace,
     package='rviz2',
     executable='rviz2',
-    arguments=['-d', rviz_config_file],
+    arguments=['-d', namespaced_rviz_config_file],
+    remappings=remappings,
     output='screen'
   )
 
   delayed_start_rviz = TimerAction(
-    period=5.0,
+    period=0.2,
     actions=[
       start_rviz
     ]
@@ -156,11 +173,12 @@ def generate_launch_description():
   ld.add_action(declare_gazebo_gui)
   ld.add_action(declare_checkTerrainConn)
 
-  ld.add_action(start_loam_interface)
-  ld.add_action(start_local_planner)
+  ld.add_action(start_sim_pcd_transform)
+  # ld.add_action(start_loam_interface)
+  ld.add_action(start_sensor_scan_generation)
   ld.add_action(start_terrain_analysis)
   ld.add_action(start_terrain_analysis_ext)
-  ld.add_action(start_sensor_scan_generation)
+  ld.add_action(start_local_planner)
 
   # ld.add_action(start_vehicle_simulator)
   # ld.add_action(start_visualization_tools)
