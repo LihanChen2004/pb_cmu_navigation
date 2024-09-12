@@ -125,15 +125,15 @@ int main(int argc, char** argv)
     false
   };
 
-  subOdometry.subscribe(nh, "/state_estimation", qos_profile);
-  subLaserCloud.subscribe(nh, "/registered_scan", qos_profile);
+  subOdometry.subscribe(nh, "odometry", qos_profile);
+  subLaserCloud.subscribe(nh, "registered_scan", qos_profile);
   sync_.reset(new Sync(syncPolicy(100), subOdometry, subLaserCloud));
   sync_->registerCallback(std::bind(laserCloudAndOdometryHandler, placeholders::_1, placeholders::_2));
-  pubOdometryPointer = nh->create_publisher<nav_msgs::msg::Odometry>("/state_estimation_at_scan", 5);
+  pubOdometryPointer = nh->create_publisher<nav_msgs::msg::Odometry>("odometry_at_scan", 5);
 
   tfBroadcasterPointer = std::make_unique<tf2_ros::TransformBroadcaster>(*nh);
 
-  pubLaserCloud = nh->create_publisher<sensor_msgs::msg::PointCloud2>("/sensor_scan", 2);
+  pubLaserCloud = nh->create_publisher<sensor_msgs::msg::PointCloud2>("sensor_scan", 2);
 
   rclcpp::spin(nh);
 

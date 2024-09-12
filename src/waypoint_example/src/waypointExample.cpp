@@ -183,16 +183,16 @@ int main(int argc, char** argv)
   nh->get_parameter("sendSpeed", sendSpeed);
   nh->get_parameter("sendBoundary", sendBoundary);
   
-  auto subPose = nh->create_subscription<nav_msgs::msg::Odometry>("/state_estimation", 5, poseHandler);
+  auto subPose = nh->create_subscription<nav_msgs::msg::Odometry>("odometry", 5, poseHandler);
   
-  auto pubWaypoint = nh->create_publisher<geometry_msgs::msg::PointStamped>("/way_point", 5);
+  auto pubWaypoint = nh->create_publisher<geometry_msgs::msg::PointStamped>("way_point", 5);
   geometry_msgs::msg::PointStamped waypointMsgs;
   waypointMsgs.header.frame_id = "map";
   
-  auto pubSpeed = nh->create_publisher<std_msgs::msg::Float32>("/speed", 5);
+  auto pubSpeed = nh->create_publisher<std_msgs::msg::Float32>("speed", 5);
   std_msgs::msg::Float32 speedMsgs;
   
-  auto pubBoundary = nh->create_publisher<geometry_msgs::msg::PolygonStamped>("/navigation_boundary", 5);
+  auto pubBoundary = nh->create_publisher<geometry_msgs::msg::PolygonStamped>("navigation_boundary", 5);
   geometry_msgs::msg::PolygonStamped boundaryMsgs;
   boundaryMsgs.header.frame_id = "map";
 

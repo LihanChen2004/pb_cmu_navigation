@@ -353,13 +353,13 @@ int main(int argc, char** argv)
   nh->get_parameter("InclFittingThre", InclFittingThre);
   nh->get_parameter("maxIncl", maxIncl);
 
-  auto subScan = nh->create_subscription<sensor_msgs::msg::PointCloud2>("/velodyne_points", 2, scanHandler);
+  auto subScan = nh->create_subscription<sensor_msgs::msg::PointCloud2>("velodyne_points", 2, scanHandler);
 
-  auto subTerrainCloud = nh->create_subscription<sensor_msgs::msg::PointCloud2>("/terrain_map", 2, terrainCloudHandler);
+  auto subTerrainCloud = nh->create_subscription<sensor_msgs::msg::PointCloud2>("terrain_map", 2, terrainCloudHandler);
 
-  auto subSpeed = nh->create_subscription<geometry_msgs::msg::TwistStamped>("/cmd_vel", 5, speedHandler);
+  auto subSpeed = nh->create_subscription<geometry_msgs::msg::TwistStamped>("cmd_vel", 5, speedHandler);
 
-  auto pubVehicleOdom = nh->create_publisher<nav_msgs::msg::Odometry>("/state_estimation", 5);
+  auto pubVehicleOdom = nh->create_publisher<nav_msgs::msg::Odometry>("odometry", 5);
   nav_msgs::msg::Odometry odomData;
   odomData.header.frame_id = "map";
   odomData.child_frame_id = "sensor";
@@ -379,7 +379,7 @@ int main(int argc, char** argv)
   rclcpp::Client<gazebo_msgs::srv::SetEntityState>::SharedPtr client = nh->create_client<gazebo_msgs::srv::SetEntityState>("/set_entity_state");
   auto request  = std::make_shared<gazebo_msgs::srv::SetEntityState::Request>();
 
-  pubScanPointer = nh->create_publisher<sensor_msgs::msg::PointCloud2>("/registered_scan", 2);
+  pubScanPointer = nh->create_publisher<sensor_msgs::msg::PointCloud2>("registered_scan", 2);
 
   terrainDwzFilter.setLeafSize(terrainVoxelSize, terrainVoxelSize, terrainVoxelSize);
 

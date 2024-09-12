@@ -255,15 +255,15 @@ int main(int argc, char **argv) {
   nh->get_parameter("maxRelZ", maxRelZ);
   nh->get_parameter("disRatioZ", disRatioZ);
 
-  auto subOdometry = nh->create_subscription<nav_msgs::msg::Odometry>("/state_estimation", 5, odometryHandler);
+  auto subOdometry = nh->create_subscription<nav_msgs::msg::Odometry>("odometry", 5, odometryHandler);
 
-  auto subLaserCloud = nh->create_subscription<sensor_msgs::msg::PointCloud2>("/registered_scan", 5, laserCloudHandler);
+  auto subLaserCloud = nh->create_subscription<sensor_msgs::msg::PointCloud2>("registered_scan", 5, laserCloudHandler);
 
-  auto subJoystick = nh->create_subscription<sensor_msgs::msg::Joy>("/joy", 5, joystickHandler);
+  auto subJoystick = nh->create_subscription<sensor_msgs::msg::Joy>("joy", 5, joystickHandler);
 
-  auto subClearing = nh->create_subscription<std_msgs::msg::Float32>("/map_clearing", 5, clearingHandler);
+  auto subClearing = nh->create_subscription<std_msgs::msg::Float32>("map_clearing", 5, clearingHandler);
 
-  auto pubLaserCloud = nh->create_publisher<sensor_msgs::msg::PointCloud2>("/terrain_map", 2);
+  auto pubLaserCloud = nh->create_publisher<sensor_msgs::msg::PointCloud2>("terrain_map", 2);
 
   for (int i = 0; i < terrainVoxelNum; i++) {
     terrainVoxelCloud[i].reset(new pcl::PointCloud<pcl::PointXYZI>());

@@ -74,28 +74,28 @@ class Listener(Node):
 
         self.time_duration_subscription = self.create_subscription(
             Float32,
-            '/time_duration',
+            'time_duration',
             timeDurationCallback,
             10)
         self.time_duration_subscription  # prevent unused variable warning 
 
         self.runtime_subscription = self.create_subscription(
             Float32,
-            '/runtime',
+            'runtime',
             runTimeCallback,
             10)
         self.runtime_subscription  # prevent unused variable warning 
 
         self.explored_volume_subscription = self.create_subscription(
             Float32,
-            '/explored_volume',
+            'explored_volume',
             exploredVolumeCallback,
             10)
         self.explored_volume_subscription  
 
         self.traveling_distance_subscription = self.create_subscription(
             Float32,
-            '/traveling_distance',
+            'traveling_distance',
             travelingDistanceCallback,
             10)
         self.traveling_distance_subscription  
