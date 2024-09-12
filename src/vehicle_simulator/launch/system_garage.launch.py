@@ -3,11 +3,12 @@ import os
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, TimerAction
-from launch.launch_description_sources import PythonLaunchDescriptionSource, FrontendLaunchDescriptionSource
+from launch.launch_description_sources import PythonLaunchDescriptionSource, PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 from launch.substitutions import LaunchConfiguration 
 
 def generate_launch_description():
+  namespace = LaunchConfiguration('namespace')
   world_name = LaunchConfiguration('world_name')
   vehicleHeight = LaunchConfiguration('vehicleHeight')
   cameraOffsetZ = LaunchConfiguration('cameraOffsetZ')
@@ -19,6 +20,7 @@ def generate_launch_description():
   gazebo_gui = LaunchConfiguration('gazebo_gui')
   checkTerrainConn = LaunchConfiguration('checkTerrainConn')
   
+  declare_namespace = DeclareLaunchArgument('namespace', default_value='red_standard_robot1', description='')
   declare_world_name = DeclareLaunchArgument('world_name', default_value='garage', description='')
   declare_vehicleHeight = DeclareLaunchArgument('vehicleHeight', default_value='0.75', description='')
   declare_cameraOffsetZ = DeclareLaunchArgument('cameraOffsetZ', default_value='0.0', description='')
@@ -29,12 +31,27 @@ def generate_launch_description():
   declare_vehicleYaw = DeclareLaunchArgument('vehicleYaw', default_value='0.0', description='')
   declare_gazebo_gui = DeclareLaunchArgument('gazebo_gui', default_value='false', description='')
   declare_checkTerrainConn = DeclareLaunchArgument('checkTerrainConn', default_value='true', description='')
-  
+
+  # Map fully qualified names to relative ones so the node's namespace can be prepended.
+  # In case of the transforms (tf), currently, there doesn't seem to be a better alternative
+  # https://github.com/ros/geometry2/issues/32
+  # https://github.com/ros/robot_state_publisher/pull/30
+  # TODO(orduno) Substitute with `PushNodeRemapping`
+  #              https://github.com/ros2/launch_ros/issues/56
+  remappings = [("/tf", "tf"), ("/tf_static", "tf_static")]
+
+  start_loam_interface = IncludeLaunchDescription(
+    PythonLaunchDescriptionSource(os.path.join(
+      get_package_share_directory('loam_interface'), 'launch', 'loam_interface.launch.py')
+    )
+  )
+
   start_local_planner = IncludeLaunchDescription(
-    FrontendLaunchDescriptionSource(os.path.join(
-      get_package_share_directory('local_planner'), 'launch', 'local_planner.launch')
+    PythonLaunchDescriptionSource(os.path.join(
+      get_package_share_directory('local_planner'), 'launch', 'local_planner.launch.py')
     ),
     launch_arguments={
+      'namespace': namespace,
       'cameraOffsetZ': cameraOffsetZ,
       'goalX': vehicleX,
       'goalY': vehicleY,
@@ -42,16 +59,20 @@ def generate_launch_description():
   )
 
   start_terrain_analysis = IncludeLaunchDescription(
-    FrontendLaunchDescriptionSource(os.path.join(
-      get_package_share_directory('terrain_analysis'), 'launch', 'terrain_analysis.launch')
-    )
+    PythonLaunchDescriptionSource(os.path.join(
+      get_package_share_directory('terrain_analysis'), 'launch', 'terrain_analysis.launch.py')
+    ),
+    launch_arguments={
+      'namespace': namespace,
+    }.items()
   )
 
   start_terrain_analysis_ext = IncludeLaunchDescription(
-    FrontendLaunchDescriptionSource(os.path.join(
-      get_package_share_directory('terrain_analysis_ext'), 'launch', 'terrain_analysis_ext.launch')
+    PythonLaunchDescriptionSource(os.path.join(
+      get_package_share_directory('terrain_analysis_ext'), 'launch', 'terrain_analysis_ext.launch.py')
     ),
     launch_arguments={
+      'namespace': namespace,
       'checkTerrainConn': checkTerrainConn,
     }.items()
   )
@@ -73,16 +94,20 @@ def generate_launch_description():
   )
 
   start_sensor_scan_generation = IncludeLaunchDescription(
-    FrontendLaunchDescriptionSource(os.path.join(
-      get_package_share_directory('sensor_scan_generation'), 'launch', 'sensor_scan_generation.launch')
-    )
+    PythonLaunchDescriptionSource(os.path.join(
+      get_package_share_directory('sensor_scan_generation'), 'launch', 'sensor_scan_generation.launch.py')
+    ),
+    launch_arguments={
+      'namespace': namespace,
+    }.items()
   )
 
   start_visualization_tools = IncludeLaunchDescription(
-    FrontendLaunchDescriptionSource(os.path.join(
+    PythonLaunchDescriptionSource(os.path.join(
       get_package_share_directory('visualization_tools'), 'launch', 'visualization_tools.launch')
     ),
     launch_arguments={
+      'namespace': namespace,
       'world_name': world_name,
     }.items()
   )
@@ -93,6 +118,7 @@ def generate_launch_description():
     name='ps3_joy',
     output='screen',
     parameters=[{
+                'namespace': namespace,
                 'dev': "/dev/input/js0",
                 'deadzone': 0.12,
                 'autorepeat_rate': 0.0,
@@ -101,6 +127,7 @@ def generate_launch_description():
 
   rviz_config_file = os.path.join(get_package_share_directory('vehicle_simulator'), 'rviz', 'vehicle_simulator.rviz')
   start_rviz = Node(
+    namespace=namespace,
     package='rviz2',
     executable='rviz2',
     arguments=['-d', rviz_config_file],
@@ -108,7 +135,7 @@ def generate_launch_description():
   )
 
   delayed_start_rviz = TimerAction(
-    period=8.0,
+    period=5.0,
     actions=[
       start_rviz
     ]
@@ -117,6 +144,7 @@ def generate_launch_description():
   ld = LaunchDescription()
 
   # Add the actions
+  ld.add_action(declare_namespace)
   ld.add_action(declare_world_name)
   ld.add_action(declare_vehicleHeight)
   ld.add_action(declare_cameraOffsetZ)
@@ -128,13 +156,16 @@ def generate_launch_description():
   ld.add_action(declare_gazebo_gui)
   ld.add_action(declare_checkTerrainConn)
 
+  ld.add_action(start_loam_interface)
   ld.add_action(start_local_planner)
   ld.add_action(start_terrain_analysis)
   ld.add_action(start_terrain_analysis_ext)
-  ld.add_action(start_vehicle_simulator)
   ld.add_action(start_sensor_scan_generation)
-  ld.add_action(start_visualization_tools)
-  ld.add_action(start_joy)
+
+  # ld.add_action(start_vehicle_simulator)
+  # ld.add_action(start_visualization_tools)
+  # ld.add_action(start_joy)
+
   ld.add_action(delayed_start_rviz)
 
   return ld

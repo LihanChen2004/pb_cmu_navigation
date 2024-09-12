@@ -80,7 +80,7 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /registered_scan
+        Value: registered_scan
       Use Fixed Frame: true
       Use rainbow: true
       Value: false
@@ -114,7 +114,7 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /sensor_scan
+        Value: sensor_scan
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
@@ -148,7 +148,7 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /terrain_map
+        Value: terrain_map
       Use Fixed Frame: true
       Use rainbow: true
       Value: false
@@ -182,7 +182,7 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /terrain_map_ext
+        Value: terrain_map_ext
       Use Fixed Frame: true
       Use rainbow: true
       Value: false
@@ -206,7 +206,7 @@ Visualization Manager:
       Radius: 0.029999999329447746
       Shaft Diameter: 0.10000000149011612
       Shaft Length: 0.10000000149011612
-      Topic: /path
+      Topic: path
       Unreliable: false
       Value: true
     - Alpha: 1
@@ -239,7 +239,7 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /free_paths
+        Value: free_paths
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
@@ -256,14 +256,14 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /way_point
+        Value: way_point
       Value: true
     - Alpha: 1
       Class: rviz_default_plugins/Polygon
       Color: 0; 255; 0
       Enabled: true
       Name: Boundary
-      Topic: /navigation_boundary
+      Topic: navigation_boundary
       Unreliable: false
       Value: true
     - Alpha: 1
@@ -296,7 +296,7 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /added_obstacles
+        Value: added_obstacles
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
@@ -330,7 +330,7 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /overall_map
+        Value: overall_map
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
@@ -364,7 +364,7 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /explored_areas
+        Value: explored_areas
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
@@ -398,7 +398,7 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /trajectory
+        Value: trajectory
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
