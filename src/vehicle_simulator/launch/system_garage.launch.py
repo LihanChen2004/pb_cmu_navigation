@@ -2,7 +2,7 @@ import os
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, TimerAction
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource, PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 from launch.substitutions import LaunchConfiguration
@@ -152,9 +152,9 @@ def generate_launch_description():
     package='joy', 
     executable='joy_node',
     name='ps3_joy',
+    namespace=namespace,
     output='screen',
     parameters=[{
-                'namespace': namespace,
                 'dev': "/dev/input/js0",
                 'deadzone': 0.12,
                 'autorepeat_rate': 0.0,
@@ -168,13 +168,6 @@ def generate_launch_description():
     arguments=['-d', namespaced_rviz_config_file],
     remappings=remappings,
     output='screen'
-  )
-
-  delayed_start_rviz = TimerAction(
-    period=0.2,
-    actions=[
-      start_rviz
-    ]
   )
 
   ld = LaunchDescription()
@@ -202,8 +195,8 @@ def generate_launch_description():
 
   # ld.add_action(start_vehicle_simulator)
   # ld.add_action(start_visualization_tools)
-  # ld.add_action(start_joy)
+  ld.add_action(start_joy)
 
-  ld.add_action(delayed_start_rviz)
+  ld.add_action(start_rviz)
 
   return ld
