@@ -180,7 +180,7 @@ void scanHandler(const sensor_msgs::msg::PointCloud2::ConstSharedPtr scanIn)
   sensor_msgs::msg::PointCloud2 scanData2;
   pcl::toROSMsg(*scanData, scanData2);
   scanData2.header.stamp = rclcpp::Time(static_cast<uint64_t>(odomRecTime * 1e9));
-  scanData2.header.frame_id = "map";
+  scanData2.header.frame_id = "odom";
   pubScanPointer->publish(scanData2);
 }
 
@@ -361,13 +361,13 @@ int main(int argc, char** argv)
 
   auto pubVehicleOdom = nh->create_publisher<nav_msgs::msg::Odometry>("odometry", 5);
   nav_msgs::msg::Odometry odomData;
-  odomData.header.frame_id = "map";
-  odomData.child_frame_id = "sensor";
+  odomData.header.frame_id = "odom";
+  odomData.child_frame_id = "right_mid360";
 
   auto tfBroadcaster = std::make_unique<tf2_ros::TransformBroadcaster>(*nh);
   tf2::Stamped<tf2::Transform> odomTrans;
   geometry_msgs::msg::TransformStamped transformTfGeom ; 
-  odomTrans.frame_id_ = "map";
+  odomTrans.frame_id_ = "odom";
 
   gazebo_msgs::msg::EntityState cameraState;
   cameraState.name = "camera";
@@ -443,7 +443,7 @@ int main(int argc, char** argv)
     odomTrans.setRotation(tf2::Quaternion(geoQuat.x, geoQuat.y, geoQuat.z, geoQuat.w));
     odomTrans.setOrigin(tf2::Vector3(vehicleX, vehicleY, vehicleZ));
     transformTfGeom = tf2::toMsg(odomTrans);
-    transformTfGeom.child_frame_id = "sensor";
+    transformTfGeom.child_frame_id = "right_mid360";
     transformTfGeom.header.stamp = odomTime;
     tfBroadcaster->sendTransform(transformTfGeom);
 

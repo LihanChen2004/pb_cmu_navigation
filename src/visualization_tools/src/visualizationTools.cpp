@@ -147,7 +147,7 @@ void odometryHandler(const nav_msgs::msg::Odometry::ConstSharedPtr odom)
   sensor_msgs::msg::PointCloud2 trajectory2;
   pcl::toROSMsg(*trajectory, trajectory2);
   trajectory2.header.stamp = odom->header.stamp;
-  trajectory2.header.frame_id = "map";
+  trajectory2.header.frame_id = "odom";
   pubTrajectoryPtr->publish(trajectory2);
 }
 

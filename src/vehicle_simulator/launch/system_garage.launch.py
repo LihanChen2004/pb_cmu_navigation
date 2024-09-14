@@ -119,6 +119,25 @@ def generate_launch_description():
     }.items()
   )
 
+  # In the future, the transform will be provided by relocalization module
+  start_map_trans_publisher = Node(
+      package='tf2_ros',
+      executable='static_transform_publisher',
+      name='sensorTransPublisher',
+      namespace=namespace,
+      remappings=remappings,
+      arguments=[
+          '--x', '0.0',
+          '--y', '0.0',
+          '--z', '0',
+          '--roll', '0',
+          '--pitch', '0.0',
+          '--yaw', '0',
+          '--frame-id', 'map',
+          '--child-frame-id', 'odom'
+      ],
+  )
+
   start_visualization_tools = IncludeLaunchDescription(
     PythonLaunchDescriptionSource(os.path.join(
       get_package_share_directory('visualization_tools'), 'launch', 'visualization_tools.launch')
@@ -179,6 +198,7 @@ def generate_launch_description():
   ld.add_action(start_terrain_analysis)
   ld.add_action(start_terrain_analysis_ext)
   ld.add_action(start_local_planner)
+  ld.add_action(start_map_trans_publisher)
 
   # ld.add_action(start_vehicle_simulator)
   # ld.add_action(start_visualization_tools)

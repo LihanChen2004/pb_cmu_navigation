@@ -43,7 +43,7 @@ private:
     sensor_msgs::msg::PointCloud2 output;
     pcl::toROSMsg(transformed_cloud, output);
     output.header.stamp = msg->header.stamp;
-    output.header.frame_id = "map";
+    output.header.frame_id = "odom";
 
     pointcloud_pub_->publish(output);
   }

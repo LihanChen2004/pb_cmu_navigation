@@ -128,42 +128,6 @@ def generate_launch_description():
         }]
     )
 
-    start_vehicle_trans_publisher = Node(
-        package='tf2_ros',
-        executable='static_transform_publisher',
-        name='vehicleTransPublisher',
-        namespace=namespace,
-        remappings=remappings,
-        arguments=[
-            '--x', sensorOffsetX,
-            '--y', sensorOffsetY,
-            '--z', '0.0',
-            '--roll', '0.0',
-            '--pitch', '0.0',
-            '--yaw', '0.0',
-            '--frame-id', '/sensor',
-            '--child-frame-id', '/vehicle'
-        ],
-    )
-
-    start_sensor_trans_publisher = Node(
-        package='tf2_ros',
-        executable='static_transform_publisher',
-        name='sensorTransPublisher',
-        namespace=namespace,
-        remappings=remappings,
-        arguments=[
-            '--x', '0.0',
-            '--y', '0.0',
-            '--z', cameraOffsetZ,
-            '--roll', '-1.5707963',
-            '--pitch', '0.0',
-            '--yaw', '-1.5707963',
-            '--frame-id', '/sensor',
-            '--child-frame-id', '/vehicle'
-        ],
-    )
-
     ld = LaunchDescription()
 
     # Add the actions
@@ -181,7 +145,5 @@ def generate_launch_description():
 
     ld.add_action(start_local_planner)
     ld.add_action(start_path_follower)
-    ld.add_action(start_vehicle_trans_publisher)
-    ld.add_action(start_sensor_trans_publisher)
 
     return ld
