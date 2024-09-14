@@ -29,7 +29,7 @@ def generate_launch_description():
         output='screen',
         parameters=[{
             'stateEstimationTopic': 'odometry',
-            'registeredScanTopic': 'livox/lidar',
+            'registeredScanTopic': 'registered_scan',
             'flipStateEstimation': False,
             'flipRegisteredScan': False,
             'sendTF': False,

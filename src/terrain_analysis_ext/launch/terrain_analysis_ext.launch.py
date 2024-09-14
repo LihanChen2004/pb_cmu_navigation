@@ -37,7 +37,7 @@ def generate_launch_description():
             'clearingDis': 30.0,
             'useSorting': False,
             'quantileZ': 0.1,
-            'vehicleHeight': 1.5,
+            'vehicleHeight': 0.4,
             'voxelPointUpdateThre': 100,
             'voxelTimeUpdateThre': 2.0,
             'lowerBoundZ': -2.5,

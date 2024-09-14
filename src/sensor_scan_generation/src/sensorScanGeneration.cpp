@@ -37,7 +37,6 @@ double yaw = 0;
 bool newTransformToMap = false;
 
 nav_msgs::msg::Odometry odometryIn;
-shared_ptr<rclcpp::Publisher<nav_msgs::msg::Odometry>> pubOdometryPointer;
 tf2::Stamped<tf2::Transform> transformToMap;
 geometry_msgs::msg::TransformStamped transformTfGeom ; 
 
@@ -80,21 +79,16 @@ void laserCloudAndOdometryHandler(const nav_msgs::msg::Odometry::ConstSharedPtr 
     laserCLoudInSensorFrame->points.push_back(p1);
   }
 
-  odometryIn.header.stamp = laserCloud2->header.stamp;
-  odometryIn.header.frame_id = "map";
-  odometryIn.child_frame_id = "sensor_at_scan";
-  pubOdometryPointer->publish(odometryIn);
-
   transformToMap.frame_id_ = "map";
   transformTfGeom = tf2::toMsg(transformToMap);
   transformTfGeom.header.stamp = laserCloud2->header.stamp;
-  transformTfGeom.child_frame_id = "sensor_at_scan";
+  transformTfGeom.child_frame_id = "chassis";
   tfBroadcasterPointer->sendTransform(transformTfGeom);
 
   sensor_msgs::msg::PointCloud2 scan_data;
   pcl::toROSMsg(*laserCLoudInSensorFrame, scan_data);
   scan_data.header.stamp = laserCloud2->header.stamp;
-  scan_data.header.frame_id = "sensor_at_scan";
+  scan_data.header.frame_id = "chassis";
   pubLaserCloud->publish(scan_data);
 }
 
@@ -129,7 +123,6 @@ int main(int argc, char** argv)
   subLaserCloud.subscribe(nh, "registered_scan", qos_profile);
   sync_.reset(new Sync(syncPolicy(100), subOdometry, subLaserCloud));
   sync_->registerCallback(std::bind(laserCloudAndOdometryHandler, placeholders::_1, placeholders::_2));
-  pubOdometryPointer = nh->create_publisher<nav_msgs::msg::Odometry>("odometry_at_scan", 5);
 
   tfBroadcasterPointer = std::make_unique<tf2_ros::TransformBroadcaster>(*nh);
 

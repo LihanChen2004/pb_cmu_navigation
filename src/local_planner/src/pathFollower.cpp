@@ -167,6 +167,7 @@ void joystickHandler(const sensor_msgs::msg::Joy::ConstSharedPtr joy)
   //   joySpeed = 0;
   //   joyYaw = 0;
   // }
+  joyYaw = joy->axes[0];
 
   if (joy->axes[2] > -0.1) {
     autonomyMode = false;
