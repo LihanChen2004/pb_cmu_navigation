@@ -1,23 +1,27 @@
 #ifndef SENSOR_SCAN_GENERATION_H
 #define SENSOR_SCAN_GENERATION_H
 
-#include <memory>
+#include <message_filters/subscriber.h>
+#include <message_filters/sync_policies/approximate_time.h>
+#include <message_filters/synchronizer.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <tf2_ros/buffer.h>
 #include <tf2_ros/transform_broadcaster.h>
 #include <tf2_ros/transform_listener.h>
-#include <message_filters/subscriber.h>
-#include <message_filters/sync_policies/approximate_time.h>
-#include <message_filters/synchronizer.h>
-#include <nav_msgs/msg/odometry.hpp>
-#include <sensor_msgs/msg/point_cloud2.hpp>
-#include <rclcpp/rclcpp.hpp>
 
-class SensorScan : public rclcpp::Node
+#include <memory>
+#include <nav_msgs/msg/odometry.hpp>
+#include <rclcpp/rclcpp.hpp>
+#include <sensor_msgs/msg/point_cloud2.hpp>
+
+namespace sensor_scan_generation
+{
+
+class SensorScanGenerationNode : public rclcpp::Node
 {
 public:
-  SensorScan();
+  SensorScanGenerationNode();
 
 private:
   void laserCloudAndOdometryHandler(
@@ -41,5 +45,7 @@ private:
     nav_msgs::msg::Odometry, sensor_msgs::msg::PointCloud2>;
   std::shared_ptr<message_filters::Synchronizer<SyncPolicy>> sync_;
 };
+
+};  // namespace sensor_scan_generation
 
 #endif  // SENSOR_SCAN_GENERATION_H

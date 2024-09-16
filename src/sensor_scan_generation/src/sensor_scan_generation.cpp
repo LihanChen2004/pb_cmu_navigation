@@ -7,7 +7,10 @@
 #include <pcl_ros/transforms.hpp>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
-SensorScan::SensorScan()
+namespace sensor_scan_generation
+{
+
+SensorScanGenerationNode::SensorScanGenerationNode()
 : Node("sensor_scan"),
   laser_cloud_in_(new pcl::PointCloud<pcl::PointXYZ>()),
   laser_cloud_in_sensor_frame_(new pcl::PointCloud<pcl::PointXYZ>())
@@ -38,12 +41,13 @@ SensorScan::SensorScan()
   sync_ = std::make_shared<message_filters::Synchronizer<SyncPolicy>>(
     SyncPolicy(100), odometry_sub_, laser_cloud_sub_);
   sync_->registerCallback(std::bind(
-    &SensorScan::laserCloudAndOdometryHandler, this, std::placeholders::_1, std::placeholders::_2));
+    &SensorScanGenerationNode::laserCloudAndOdometryHandler, this, std::placeholders::_1,
+    std::placeholders::_2));
 
   br_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
 }
 
-void SensorScan::laserCloudAndOdometryHandler(
+void sensor_scan_generation::SensorScanGenerationNode::laserCloudAndOdometryHandler(
   const nav_msgs::msg::Odometry::ConstSharedPtr odometry,
   const sensor_msgs::msg::PointCloud2::ConstSharedPtr laserCloud2)
 {
@@ -106,8 +110,10 @@ void SensorScan::laserCloudAndOdometryHandler(
 int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
-  auto sensor_scan_node = std::make_shared<SensorScan>();
+  auto sensor_scan_node = std::make_shared<sensor_scan_generation::SensorScanGenerationNode>();
   rclcpp::spin(sensor_scan_node);
   rclcpp::shutdown();
   return 0;
 }
+
+}  // namespace sensor_scan_generation
