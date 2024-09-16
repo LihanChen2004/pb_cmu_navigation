@@ -28,8 +28,8 @@ def generate_launch_description():
         remappings=remappings,
         output='screen',
         parameters=[{
-            'stateEstimationTopic': 'odometry',
-            'registeredScanTopic': 'registered_scan',
+            'stateEstimationTopic': 'aft_mapped_to_init',
+            'registeredScanTopic': 'cloud_registered',
             'flipStateEstimation': False,
             'flipRegisteredScan': False,
             'sendTF': False,

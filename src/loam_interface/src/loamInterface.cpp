@@ -54,7 +54,7 @@ public:
 
     tfBroadcasterPointer = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
     pubLaserCloud = this->create_publisher<sensor_msgs::msg::PointCloud2>("registered_scan", 5);
-    pubOdometry = this->create_publisher<nav_msgs::msg::Odometry>("odometry", 5);
+    pubOdometry = this->create_publisher<nav_msgs::msg::Odometry>("lidar_odometry", 5);
 
     subLaserCloud = this->create_subscription<sensor_msgs::msg::PointCloud2>(
       registeredScanTopic, 5, std::bind(&LoamInterface::laserCloudHandler, this, std::placeholders::_1));

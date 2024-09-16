@@ -185,8 +185,8 @@ def generate_launch_description():
   ld.add_action(declare_gazebo_gui)
   ld.add_action(declare_checkTerrainConn)
 
-  ld.add_action(start_sim_pcd_transform)
-  # ld.add_action(start_loam_interface)
+  # ld.add_action(start_sim_pcd_transform)
+  ld.add_action(start_loam_interface)
   ld.add_action(start_sensor_scan_generation)
   ld.add_action(start_terrain_analysis)
   ld.add_action(start_terrain_analysis_ext)
