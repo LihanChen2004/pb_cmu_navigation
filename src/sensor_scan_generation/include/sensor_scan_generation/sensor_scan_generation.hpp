@@ -10,7 +10,6 @@
 #include <tf2_ros/transform_broadcaster.h>
 #include <tf2_ros/transform_listener.h>
 
-#include <memory>
 #include <nav_msgs/msg/odometry.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/point_cloud2.hpp>
@@ -21,31 +20,28 @@ namespace sensor_scan_generation
 class SensorScanGenerationNode : public rclcpp::Node
 {
 public:
-  SensorScanGenerationNode();
+  explicit SensorScanGenerationNode(const rclcpp::NodeOptions & options);
 
 private:
   void laserCloudAndOdometryHandler(
-    const nav_msgs::msg::Odometry::ConstSharedPtr odometry,
-    const sensor_msgs::msg::PointCloud2::ConstSharedPtr laserCloud2);
-
-  pcl::PointCloud<pcl::PointXYZ>::Ptr laser_cloud_in_;
-  pcl::PointCloud<pcl::PointXYZ>::Ptr laser_cloud_in_sensor_frame_;
+    const nav_msgs::msg::Odometry::ConstSharedPtr & odometry,
+    const sensor_msgs::msg::PointCloud2::ConstSharedPtr & laserCloud2);
 
   std::unique_ptr<tf2_ros::TransformBroadcaster> br_;
-  std::shared_ptr<rclcpp::Publisher<sensor_msgs::msg::PointCloud2>> pub_laser_cloud_;
-  std::shared_ptr<rclcpp::Publisher<nav_msgs::msg::Odometry>> pub_chassis_odometry_;
+  rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pub_laser_cloud_;
+  rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr pub_chassis_odometry_;
 
-  std::shared_ptr<tf2_ros::Buffer> tf_buffer_;
-  std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
+  std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
+  std::unique_ptr<tf2_ros::TransformListener> tf_listener_;
 
   message_filters::Subscriber<nav_msgs::msg::Odometry> odometry_sub_;
   message_filters::Subscriber<sensor_msgs::msg::PointCloud2> laser_cloud_sub_;
 
   using SyncPolicy = message_filters::sync_policies::ApproximateTime<
     nav_msgs::msg::Odometry, sensor_msgs::msg::PointCloud2>;
-  std::shared_ptr<message_filters::Synchronizer<SyncPolicy>> sync_;
+  std::unique_ptr<message_filters::Synchronizer<SyncPolicy>> sync_;
 };
 
-};  // namespace sensor_scan_generation
+}  // namespace sensor_scan_generation
 
 #endif  // SENSOR_SCAN_GENERATION_H
