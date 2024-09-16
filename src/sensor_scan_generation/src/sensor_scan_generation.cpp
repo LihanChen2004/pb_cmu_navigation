@@ -1,6 +1,10 @@
 #include "sensor_scan_generation/sensor_scan_generation.hpp"
+
+#include <pcl/common/transforms.h>
 #include <pcl_conversions/pcl_conversions.h>
 #include <tf2/transform_datatypes.h>
+
+#include <pcl_ros/transforms.hpp>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
 SensorScan::SensorScan()
@@ -33,10 +37,10 @@ SensorScan::SensorScan()
 
   sync_ = std::make_shared<message_filters::Synchronizer<SyncPolicy>>(
     SyncPolicy(100), odometry_sub_, laser_cloud_sub_);
-  sync_->registerCallback(
-    std::bind(&SensorScan::laserCloudAndOdometryHandler, this, std::placeholders::_1, std::placeholders::_2));
+  sync_->registerCallback(std::bind(
+    &SensorScan::laserCloudAndOdometryHandler, this, std::placeholders::_1, std::placeholders::_2));
 
-  tf_br_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
+  br_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
 }
 
 void SensorScan::laserCloudAndOdometryHandler(
@@ -71,7 +75,7 @@ void SensorScan::laserCloudAndOdometryHandler(
   odom_to_chassis_msg.header.frame_id = "odom";
   odom_to_chassis_msg.child_frame_id = "chassis";
   odom_to_chassis_msg.transform = tf2::toMsg(tf_odom_to_chassis);
-  tf_br_->sendTransform(odom_to_chassis_msg);
+  br_->sendTransform(odom_to_chassis_msg);
 
   // Publish odometry message (odom -> chassis)
   nav_msgs::msg::Odometry chassis_odometry_msg;
@@ -84,20 +88,12 @@ void SensorScan::laserCloudAndOdometryHandler(
   chassis_odometry_msg.pose.pose.orientation = tf2::toMsg(tf_odom_to_chassis.getRotation());
   pub_chassis_odometry_->publish(chassis_odometry_msg);
 
-  // Process point cloud (odom -> lidar)
-  pcl::PointXYZ point;
-  tf2::Vector3 vec;
-  for (const auto& p : laser_cloud_in_->points) {
-    vec.setX(p.x);
-    vec.setY(p.y);
-    vec.setZ(p.z);
-    vec = tf_odom_to_lidar.inverse() * vec;
+  // Convert tf_odom_to_lidar to Eigen::Matrix4f
+  Eigen::Matrix4f transform_matrix;
+  pcl_ros::transformAsMatrix(tf_odom_to_lidar.inverse(), transform_matrix);
 
-    point.x = vec.x();
-    point.y = vec.y();
-    point.z = vec.z();
-    laser_cloud_in_sensor_frame_->points.push_back(point);
-  }
+  // Transform point cloud (odom -> lidar)
+  pcl::transformPointCloud(*laser_cloud_in_, *laser_cloud_in_sensor_frame_, transform_matrix);
 
   // Publish the point cloud in lidar frame
   sensor_msgs::msg::PointCloud2 scan_data;
@@ -107,7 +103,7 @@ void SensorScan::laserCloudAndOdometryHandler(
   pub_laser_cloud_->publish(scan_data);
 }
 
-int main(int argc, char **argv)
+int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
   auto sensor_scan_node = std::make_shared<SensorScan>();

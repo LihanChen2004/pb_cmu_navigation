@@ -27,7 +27,7 @@ private:
   pcl::PointCloud<pcl::PointXYZ>::Ptr laser_cloud_in_;
   pcl::PointCloud<pcl::PointXYZ>::Ptr laser_cloud_in_sensor_frame_;
 
-  std::unique_ptr<tf2_ros::TransformBroadcaster> tf_br_;
+  std::unique_ptr<tf2_ros::TransformBroadcaster> br_;
   std::shared_ptr<rclcpp::Publisher<sensor_msgs::msg::PointCloud2>> pub_laser_cloud_;
   std::shared_ptr<rclcpp::Publisher<nav_msgs::msg::Odometry>> pub_chassis_odometry_;
 
