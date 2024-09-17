@@ -1,0 +1,22 @@
+name: Build
+on:
+  push:
+    branches: [ humble ]
+  pull_request:
+    branches: [ humble ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-22.04
+    container:
+      image: rostooling/setup-ros-docker:ubuntu-jammy-ros-humble-desktop-latest
+    steps:
+      - name: Setup ROS 2
+        uses: ros-tooling/setup-ros@v0.7
+        with:
+          required-ros-distributions: humble
+      - name: Build pb_cmu_navigation
+        uses: ros-tooling/action-ros-ci@v0.3
+        with:
+          package-name: pb_cmu_navigation
+          target-ros2-distro: humble
