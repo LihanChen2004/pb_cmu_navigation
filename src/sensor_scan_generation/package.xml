@@ -2,13 +2,12 @@
   <name>sensor_scan_generation</name>
   <version>0.0.1</version>
   <description>sensor_scan_generation is a package to generate scan data in sensor frame with registered_scan in map frame.</description>
-  <maintainer email="hongbiaz@cmu.edu">Hongbiao Zhu</maintainer>
-  <license>BSD</license>
-
-  <author>Hongbiao Zhu</author>
+  <maintainer email="lihanchen2004@smbu.edu.cn">Lihan Chen</maintainer>
+  <license>MIT</license>
+  <author email="hongbiaz@cmu.edu">Hongbiao Zhu</author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
-  
+
   <depend>rclcpp</depend>
   <depend>std_msgs</depend>
   <depend>nav_msgs</depend>
