@@ -63,12 +63,23 @@ void SensorScanGenerationNode::laserCloudAndOdometryHandler(
     return;
   }
 
-  tf2::Transform tf_chassis_to_lidar, tf_odom_to_lidar, tf_odom_to_chassis;
+  geometry_msgs::msg::TransformStamped chassis_to_gimbal;
+  try {
+    chassis_to_gimbal = tf_buffer_->lookupTransform(
+      "right_mid360", "gimbal_yaw", pcd_msg->header.stamp, rclcpp::Duration::from_seconds(0.5));
+  } catch (tf2::TransformException & ex) {
+    RCLCPP_WARN(this->get_logger(), "TF lookup failed: %s", ex.what());
+    return;
+  }
+
+  tf2::Transform tf_chassis_to_lidar, tf_odom_to_lidar, tf_odom_to_chassis, tf_chassis_to_gimbal, tf_odom_to_gimbal;
   tf2::fromMsg(chassis_to_lidar.transform, tf_chassis_to_lidar);
+  tf2::fromMsg(chassis_to_gimbal.transform, tf_chassis_to_gimbal);
   tf2::fromMsg(odometry_msg->pose.pose, tf_odom_to_lidar);
 
   // Calculate odom -> chassis transform
   tf_odom_to_chassis = tf_odom_to_lidar * tf_chassis_to_lidar;
+  tf_odom_to_gimbal = tf_odom_to_lidar * tf_chassis_to_gimbal;
 
   // Publish transform (odom -> chassis)
   geometry_msgs::msg::TransformStamped odom_to_chassis_msg;
@@ -78,16 +89,16 @@ void SensorScanGenerationNode::laserCloudAndOdometryHandler(
   odom_to_chassis_msg.transform = tf2::toMsg(tf_odom_to_chassis);
   br_->sendTransform(odom_to_chassis_msg);
 
-  // Publish odometry message (odom -> chassis)
-  nav_msgs::msg::Odometry chassis_odometry_msg;
-  chassis_odometry_msg.header.stamp = pcd_msg->header.stamp;
-  chassis_odometry_msg.header.frame_id = "odom";
-  chassis_odometry_msg.child_frame_id = "chassis";
-  chassis_odometry_msg.pose.pose.position.x = tf_odom_to_chassis.getOrigin().x();
-  chassis_odometry_msg.pose.pose.position.y = tf_odom_to_chassis.getOrigin().y();
-  chassis_odometry_msg.pose.pose.position.z = tf_odom_to_chassis.getOrigin().z();
-  chassis_odometry_msg.pose.pose.orientation = tf2::toMsg(tf_odom_to_chassis.getRotation());
-  pub_chassis_odometry_->publish(chassis_odometry_msg);
+  // Publish odometry message (odom -> gimbal_yaw)
+  nav_msgs::msg::Odometry gimbal_odometry_msg;
+  gimbal_odometry_msg.header.stamp = pcd_msg->header.stamp;
+  gimbal_odometry_msg.header.frame_id = "odom";
+  gimbal_odometry_msg.child_frame_id = "gimbal_yaw";
+  gimbal_odometry_msg.pose.pose.position.x = tf_odom_to_gimbal.getOrigin().x();
+  gimbal_odometry_msg.pose.pose.position.y = tf_odom_to_gimbal.getOrigin().y();
+  gimbal_odometry_msg.pose.pose.position.z = tf_odom_to_gimbal.getOrigin().z();
+  gimbal_odometry_msg.pose.pose.orientation = tf2::toMsg(tf_odom_to_gimbal.getRotation());
+  pub_chassis_odometry_->publish(gimbal_odometry_msg);
 
   // Convert tf_odom_to_lidar to Eigen::Matrix4f
   Eigen::Matrix4f transform_matrix;

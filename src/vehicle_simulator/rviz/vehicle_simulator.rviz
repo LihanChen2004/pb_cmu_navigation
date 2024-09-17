@@ -5,7 +5,7 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Global Options1
-      Splitter Ratio: 0.5647059082984924
+      Splitter Ratio: 0.5
     Tree Height: 808
   - Class: rviz_common/Selection
     Name: Selection
@@ -32,9 +32,48 @@ Visualization Manager:
     - Class: rviz_default_plugins/Axes
       Enabled: true
       Length: 1.5
-      Name: Vehicle
-      Radius: 0.20000000298023224
-      Reference Frame: chassis
+      Name: GimbalYaw
+      Radius: 0.2
+      Reference Frame: gimbal_yaw
+      Value: true
+    - Alpha: 1
+      Class: rviz_default_plugins/RobotModel
+      Collision Enabled: false
+      Description File: ""
+      Description Source: Topic
+      Description Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: <robot_namespace>/robot_description
+      Enabled: true
+      Links:
+        All Links Enabled: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Expand Tree: false
+        Link Tree Style: Links in Alphabetic Order
+      Mass Properties:
+        Inertia: false
+        Mass: false
+      Name: RobotModel
+      TF Prefix: ""
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
+    - Class: rviz_default_plugins/TF
+      Enabled: true
+      Frame Timeout: 15
+      Frames:
+        All Enabled: true
+      Marker Scale: 0.5
+      Name: TF
+      Show Arrows: true
+      Show Axes: true
+      Show Names: false
+      Tree:
+      Update Interval: 0
       Value: true
     - Alpha: 0.10000000149011612
       Autocompute Intensity Bounds: true
@@ -421,16 +460,16 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 26.0099983215332031
+      Distance: 16.485105514526367
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 7.504059791564941
-        Y: 3.923011064529419
-        Z: 0
+        X: 3.1890013217926025
+        Y: 0.6079180836677551
+        Z: -0.004307345487177372
       Focal Shape Fixed Size: false
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
@@ -439,7 +478,7 @@ Visualization Manager:
       Pitch: 1.5697963237762451
       Target Frame: vehicle
       Value: Orbit (rviz)
-      Yaw: 3.140115976333618
+      Yaw: 3.135115623474121
     Saved: ~
 Window Geometry:
   Displays:
@@ -459,5 +498,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1245
-  X: 1315
+  X: 70
   Y: 27
