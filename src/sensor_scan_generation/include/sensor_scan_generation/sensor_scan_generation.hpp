@@ -40,6 +40,9 @@ private:
   using SyncPolicy = message_filters::sync_policies::ApproximateTime<
     nav_msgs::msg::Odometry, sensor_msgs::msg::PointCloud2>;
   std::unique_ptr<message_filters::Synchronizer<SyncPolicy>> sync_;
+
+  bool gimbal_to_lidar_initialized_;
+  tf2::Transform tf_chassis_to_gimbal_;
 };
 
 }  // namespace sensor_scan_generation
