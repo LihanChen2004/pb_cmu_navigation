@@ -9,18 +9,10 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
+  <depend>pb_cmu_navigation</depend>
   <depend>livox_ros_driver2</depend>
   <depend>ign_sim_pointcloud_tool</depend>
   <depend>point_lio</depend>
-  <depend>loam_interface</depend>
-  <depend>sensor_scan_generation</depend>
-  <depend>terrain_analysis</depend>
-  <depend>terrain_analysis_ext</depend>
-  <depend>local_planner</depend>
-  <depend>teleop_rviz_plugin</depend>
-  <depend>visualization_tools</depend>
-  <depend>waypoint_example</depend>
-  <depend>waypoint_rviz_plugin</depend>
 
   <export>
     <build_type>ament_cmake</build_type>
