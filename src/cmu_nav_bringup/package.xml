@@ -10,6 +10,7 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>livox_ros_driver2</depend>
+  <depend>ign_sim_pointcloud_tool</depend>
   <depend>point_lio</depend>
   <depend>loam_interface</depend>
   <depend>sensor_scan_generation</depend>
