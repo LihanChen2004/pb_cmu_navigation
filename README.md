@@ -1,5 +1,9 @@
 # pb_cmu_navigation
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Build](https://github.com/LihanChen2004/pb_cmu_navigation/actions/workflows/ci.yml/badge.svg?branch=humble)](https://github.com/LihanChen2004/pb_cmu_navigation/actions/workflows/ci.yml)
+[![Codacy grade](https://img.shields.io/codacy/grade/1a5495d4fddf48e4baede6e2351d7d7d)](https://app.codacy.com/gh/LihanChen2004/pb_cmu_navigation/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+
 深圳北理莫斯科大学 北极熊战队 2025赛季哨兵导航仿真/实车包
 
 ![spin_nav.gif](https://cdn.jsdelivr.net/gh/LihanChen2004/picx-images-hosting/spin_nav.1ove3nw63o.gif)
