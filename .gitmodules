@@ -1,0 +1,6 @@
+[submodule "livox_ros_driver2"]
+	path = livox_ros_driver2
+	url = https://gitee.com/SMBU-POLARBEAR/livox_ros_driver2_humble
+[submodule "point_lio"]
+	path = point_lio
+	url = https://github.com/LihanChen2004/Point-LIO
