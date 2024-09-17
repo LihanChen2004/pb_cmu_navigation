@@ -2,7 +2,7 @@
 
 深圳北理莫斯科大学 北极熊战队 2025赛季哨兵导航仿真/实车包
 
-![spin_nav.gif](https://tc-cdn.flowus.cn/oss/e8552aa2-a900-4335-8968-68c18aaf829c/spin_nav.gif?filename=spin_nav.gif&time=1726576200&token=699329e73cc19d5b9b65022f79c2c2086116bc9fc72007aa7532ef34ee14603e&role=free)
+![spin_nav.gif](https://cdn.jsdelivr.net/gh/LihanChen2004/picx-images-hosting/spin_nav.1ove3nw63o.gif)
 
 ## 一. 项目介绍
 
