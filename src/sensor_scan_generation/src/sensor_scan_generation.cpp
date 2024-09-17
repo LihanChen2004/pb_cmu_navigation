@@ -13,6 +13,14 @@ namespace sensor_scan_generation
 SensorScanGenerationNode::SensorScanGenerationNode(const rclcpp::NodeOptions & options)
 : Node("sensor_scan_generation", options), gimbal_to_lidar_initialized_(false)
 {
+  this->declare_parameter<std::string>("lidar_frame", "");
+  this->declare_parameter<std::string>("vehicle_base_frame", "");
+  this->declare_parameter<std::string>("vel_ref_frame", "");
+
+  this->get_parameter("lidar_frame", lidar_frame_);
+  this->get_parameter("vehicle_base_frame", vehicle_base_frame_);
+  this->get_parameter("vel_ref_frame", vel_ref_frame_);
+
   tf_buffer_ = std::make_unique<tf2_ros::Buffer>(this->get_clock());
   tf_listener_ = std::make_unique<tf2_ros::TransformListener>(*tf_buffer_);
   br_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
@@ -52,7 +60,7 @@ void SensorScanGenerationNode::laserCloudAndOdometryHandler(
 
   if (!gimbal_to_lidar_initialized_) {
     try {
-      tf_chassis_to_gimbal_ = getTransform("right_mid360", "gimbal_yaw", pcd_msg->header.stamp);
+      tf_chassis_to_gimbal_ = getTransform(lidar_frame_, vel_ref_frame_, pcd_msg->header.stamp);
       gimbal_to_lidar_initialized_ = true;
     } catch (tf2::TransformException & ex) {
       RCLCPP_WARN(this->get_logger(), "%s", ex.what());
@@ -62,7 +70,7 @@ void SensorScanGenerationNode::laserCloudAndOdometryHandler(
 
   tf2::Transform tf_chassis_to_lidar;
   try {
-    tf_chassis_to_lidar = getTransform("right_mid360", "chassis", pcd_msg->header.stamp);
+    tf_chassis_to_lidar = getTransform(lidar_frame_, vehicle_base_frame_, pcd_msg->header.stamp);
   } catch (tf2::TransformException & ex) {
     RCLCPP_WARN(this->get_logger(), "%s", ex.what());
     return;
@@ -75,8 +83,8 @@ void SensorScanGenerationNode::laserCloudAndOdometryHandler(
   tf2::Transform tf_odom_to_gimbal = tf_odom_to_lidar * tf_chassis_to_gimbal_;
 
   // Publish transformations and odometry
-  publishTransform(tf_odom_to_chassis, "odom", "chassis", pcd_msg->header.stamp);
-  publishOdometry(tf_odom_to_gimbal, "odom", "gimbal_yaw", pcd_msg->header.stamp);
+  publishTransform(tf_odom_to_chassis, "odom", vehicle_base_frame_, pcd_msg->header.stamp);
+  publishOdometry(tf_odom_to_gimbal, "odom", vel_ref_frame_, pcd_msg->header.stamp);
 
   // Transform point cloud (odom -> lidar)
   Eigen::Matrix4f transform_matrix;
@@ -87,9 +95,10 @@ void SensorScanGenerationNode::laserCloudAndOdometryHandler(
   sensor_msgs::msg::PointCloud2 scan_data;
   pcl::toROSMsg(*laser_cloud_in_sensor_frame, scan_data);
   scan_data.header.stamp = pcd_msg->header.stamp;
-  scan_data.header.frame_id = "right_mid360";
+  scan_data.header.frame_id = lidar_frame_;
   pub_laser_cloud_->publish(scan_data);
 }
+
 
 tf2::Transform SensorScanGenerationNode::getTransform(
   const std::string & target_frame, const std::string & source_frame, const rclcpp::Time & time)

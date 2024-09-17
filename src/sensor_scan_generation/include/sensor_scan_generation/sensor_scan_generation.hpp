@@ -38,6 +38,10 @@ private:
     const tf2::Transform & transform, const std::string & frame_id, const std::string & child_frame,
     const rclcpp::Time & stamp);
 
+  std::string lidar_frame_;
+  std::string vehicle_base_frame_;
+  std::string vel_ref_frame_;
+
   std::unique_ptr<tf2_ros::TransformBroadcaster> br_;
   rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pub_laser_cloud_;
   rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr pub_chassis_odometry_;
