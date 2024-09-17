@@ -1,5 +1,5 @@
-#ifndef SENSOR_SCAN_GENERATION_H
-#define SENSOR_SCAN_GENERATION_H
+#ifndef SENSOR_SCAN_GENERATION__SENSOR_SCAN_GENERATION_HPP_
+#define SENSOR_SCAN_GENERATION__SENSOR_SCAN_GENERATION_HPP_
 
 #include <message_filters/subscriber.h>
 #include <message_filters/sync_policies/approximate_time.h>
@@ -27,6 +27,17 @@ private:
     const nav_msgs::msg::Odometry::ConstSharedPtr & odometry,
     const sensor_msgs::msg::PointCloud2::ConstSharedPtr & laserCloud2);
 
+  tf2::Transform getTransform(
+    const std::string & target_frame, const std::string & source_frame, const rclcpp::Time & time);
+
+  void publishTransform(
+    const tf2::Transform & transform, const std::string & parent_frame,
+    const std::string & child_frame, const rclcpp::Time & stamp);
+
+  void publishOdometry(
+    const tf2::Transform & transform, const std::string & frame_id, const std::string & child_frame,
+    const rclcpp::Time & stamp);
+
   std::unique_ptr<tf2_ros::TransformBroadcaster> br_;
   rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pub_laser_cloud_;
   rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr pub_chassis_odometry_;
@@ -47,4 +58,4 @@ private:
 
 }  // namespace sensor_scan_generation
 
-#endif  // SENSOR_SCAN_GENERATION_H
+#endif  // SENSOR_SCAN_GENERATION__SENSOR_SCAN_GENERATION_HPP_
