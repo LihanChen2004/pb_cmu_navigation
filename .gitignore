@@ -18,17 +18,17 @@ __pycache__
 
 .DS_Store
 
-src/vehicle_simulator/mesh/*
+vehicle_simulator/mesh/*
 
-!src/vehicle_simulator/mesh/matterport
+!vehicle_simulator/mesh/matterport
 
-src/vehicle_simulator/mesh/matterport/meshes/*
+vehicle_simulator/mesh/matterport/meshes/*
 
-src/vehicle_simulator/mesh/matterport/segmentations/*
+vehicle_simulator/mesh/matterport/segmentations/*
 
-src/vehicle_simulator/mesh/matterport/preview/*
+vehicle_simulator/mesh/matterport/preview/*
 
-src/vehicle_simulator/log/*
+vehicle_simulator/log/*
 
 !download_environments.sh
 
