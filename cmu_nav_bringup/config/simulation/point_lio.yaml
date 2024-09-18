@@ -59,6 +59,7 @@
             path_en: False                      # False: close the path output
             scan_publish_en: True               # False: close all the point cloud output
             scan_bodyframe_pub_en: False        # True: output the point cloud scans in IMU-body-frame
+            tf_send_en: False                   # true: send transform from 'camera_init' to 'aft_mapped'
 
         pcd_save:
             pcd_save_en: False
