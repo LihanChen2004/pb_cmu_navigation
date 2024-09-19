@@ -75,7 +75,7 @@ Visualization Manager:
       Tree:
       Update Interval: 0
       Value: true
-    - Alpha: 0.10000000149011612
+    - Alpha: 0.6
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
         Max Value: 0.9582680463790894
@@ -96,8 +96,8 @@ Visualization Manager:
       Name: RegScan
       Position Transformer: XYZ
       Selectable: true
-      Size (Pixels): 1
-      Size (m): 0.05000000074505806
+      Size (Pixels): 2
+      Size (m): 0.5
       Style: Points
       Topic:
         Depth: 5

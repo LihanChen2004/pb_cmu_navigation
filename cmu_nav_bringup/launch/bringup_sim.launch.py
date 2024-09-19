@@ -51,9 +51,9 @@ def generate_launch_description():
     )
 
     rviz_config_file = os.path.join(
-        get_package_share_directory("vehicle_simulator"),
+        get_package_share_directory("cmu_nav_bringup"),
         "rviz",
-        "vehicle_simulator.rviz",
+        "cmu_nav.rviz",
     )
 
     namespaced_rviz_config_file = ReplaceString(
