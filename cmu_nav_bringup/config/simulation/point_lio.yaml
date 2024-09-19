@@ -28,13 +28,14 @@
 
         mapping:
             imu_en: True
+            start_in_aggressive_motion: False
             extrinsic_est_en: False             # for aggressive motion, set this variable False
             imu_time_inte: 0.005                # = 1 / frequency of IMU
             lidar_time_inte: 0.1
             satu_acc: 30.0                      # the saturation value of IMU's acceleration. not related to the units
             satu_gyro: 35.0                     # the saturation value of IMU's angular velocity. not related to the units
             acc_norm: 9.81                      # 1.0 for g as unit, 9.81 for m/s^2 as unit of the IMU's acceleration
-            lidar_meas_cov: 0.01 # 0.001
+            lidar_meas_cov: 0.001
             acc_cov_output: 500.0
             gyr_cov_output: 1000.0
             b_acc_cov: 0.0001
@@ -47,6 +48,7 @@
             match_s: 81.0
             ivox_grid_resolution: 2.0
             gravity: [ 0.0, 0.0, -9.810 ]       # [0.0, 9.810, 0.0] # gravity to be aligned
+            gravity_init: [ 0.0, 0.0, -9.810 ]  # preknown gravity in the first IMU body frame, use when imu_en is false or start from a non-stationary state
             extrinsic_T: [ 0.0, 0.0, 0.0 ]      # ulhk # [-0.5, 1.4, 1.5] # utbm
             extrinsic_R: [ 1.0, 0.0, 0.0,
                            0.0, 1.0, 0.0,
