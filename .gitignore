@@ -34,5 +34,7 @@ vehicle_simulator/log/*
 
 !readme.txt
 
+*.pcd
+
 *.gv
 *.pdf
