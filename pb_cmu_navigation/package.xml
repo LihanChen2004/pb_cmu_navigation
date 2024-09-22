@@ -15,7 +15,6 @@
   <depend>terrain_analysis_ext</depend>
   <depend>local_planner</depend>
   <depend>teleop_rviz_plugin</depend>
-  <depend>visualization_tools</depend>
   <depend>waypoint_example</depend>
   <depend>waypoint_rviz_plugin</depend>
 

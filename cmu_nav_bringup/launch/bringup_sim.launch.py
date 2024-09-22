@@ -162,16 +162,6 @@ def generate_launch_description():
         }.items(),
     )
 
-    start_visualization_tools = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(get_package_share_directory("visualization_tools"), "launch", "visualization_tools.launch")
-        ),
-        launch_arguments={
-            "namespace": namespace,
-            "world_name": world_name,
-        }.items(),
-    )
-
     start_joy = Node(
         package="joy",
         executable="joy_node",
@@ -216,7 +206,6 @@ def generate_launch_description():
     ld.add_action(TimerAction(period=5.0, actions=[start_far_planner]))
     ld.add_action(TimerAction(period=5.0, actions=[start_map_trans_publisher]))
 
-    # ld.add_action(start_visualization_tools)
     ld.add_action(start_joy)
     ld.add_action(start_rviz)
 
