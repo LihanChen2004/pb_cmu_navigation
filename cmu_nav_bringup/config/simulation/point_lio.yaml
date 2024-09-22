@@ -21,7 +21,7 @@
             time_diff_lidar_to_imu: 0.0                     # Time offset between LiDAR and IMU calibrated by other algorithms, e.g., LI-Init (find in Readme)
 
         prior_pcd:
-            enable: True
+            enable: False
             prior_pcd_map_path: "src/cmu_nav_bringup/pcd/rmul_sim.pcd"
             init_pose: [ 0.0, 0.0, 0.0 ]
 

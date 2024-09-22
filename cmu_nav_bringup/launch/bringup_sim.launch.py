@@ -18,8 +18,6 @@ def generate_launch_description():
     #              https://github.com/ros2/launch_ros/issues/56
     remappings = [("/tf", "tf"), ("/tf_static", "tf_static")]
 
-    cmu_nav_bringup_dir = get_package_share_directory("cmu_nav_bringup")
-
     namespace = LaunchConfiguration("namespace")
     world_name = LaunchConfiguration("world_name")
     cameraOffsetZ = LaunchConfiguration("cameraOffsetZ")
@@ -27,9 +25,9 @@ def generate_launch_description():
     vehicleY = LaunchConfiguration("vehicleY")
     checkTerrainConn = LaunchConfiguration("checkTerrainConn")
 
-    point_lio_params_dir = os.path.join(
-        cmu_nav_bringup_dir, "config", "simulation", "point_lio.yaml"
-    )
+    pkg_cmu_nav_bringup_dir = get_package_share_directory("cmu_nav_bringup")
+    point_lio_config_path = os.path.join(pkg_cmu_nav_bringup_dir, "config", "simulation", "point_lio.yaml")
+    tare_planner_config_path = os.path.join(pkg_cmu_nav_bringup_dir, "config", "simulation", "tare_planner.yaml")
 
     declare_namespace = DeclareLaunchArgument(
         "namespace", default_value="red_standard_robot1", description=""
@@ -50,14 +48,9 @@ def generate_launch_description():
         "checkTerrainConn", default_value="true", description=""
     )
 
-    rviz_config_file = os.path.join(
-        get_package_share_directory("cmu_nav_bringup"),
-        "rviz",
-        "cmu_nav.rviz",
-    )
 
     namespaced_rviz_config_file = ReplaceString(
-        source_file=rviz_config_file,
+        source_file=os.path.join(get_package_share_directory("cmu_nav_bringup"), "rviz", "cmu_nav.rviz"),
         replacements={"<robot_namespace>": ("/", namespace)},
     )
 
@@ -81,28 +74,20 @@ def generate_launch_description():
         package="point_lio",
         executable="pointlio_mapping",
         namespace=namespace,
-        parameters=[point_lio_params_dir],
+        parameters=[point_lio_config_path],
         remappings=remappings,
         output="screen",
     )
 
     start_loam_interface = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(
-                get_package_share_directory("loam_interface"),
-                "launch",
-                "loam_interface.launch.py",
-            )
+            os.path.join(get_package_share_directory("loam_interface"), "launch", "loam_interface.launch.py")
         )
     )
 
     start_local_planner = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(
-                get_package_share_directory("local_planner"),
-                "launch",
-                "local_planner.launch.py",
-            )
+            os.path.join(get_package_share_directory("local_planner"), "launch", "local_planner.launch.py")
         ),
         launch_arguments={
             "namespace": namespace,
@@ -114,11 +99,7 @@ def generate_launch_description():
 
     start_terrain_analysis = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(
-                get_package_share_directory("terrain_analysis"),
-                "launch",
-                "terrain_analysis.launch.py",
-            )
+            os.path.join(get_package_share_directory("terrain_analysis"), "launch", "terrain_analysis.launch.py")
         ),
         launch_arguments={
             "namespace": namespace,
@@ -127,11 +108,7 @@ def generate_launch_description():
 
     start_terrain_analysis_ext = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(
-                get_package_share_directory("terrain_analysis_ext"),
-                "launch",
-                "terrain_analysis_ext.launch.py",
-            )
+            os.path.join(get_package_share_directory("terrain_analysis_ext"), "launch", "terrain_analysis_ext.launch.py")
         ),
         launch_arguments={
             "namespace": namespace,
@@ -141,11 +118,7 @@ def generate_launch_description():
 
     start_sensor_scan_generation = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(
-                get_package_share_directory("sensor_scan_generation"),
-                "launch",
-                "sensor_scan_generation.launch.py",
-            )
+            os.path.join(get_package_share_directory("sensor_scan_generation"), "launch", "sensor_scan_generation.launch.py")
         ),
         launch_arguments={
             "namespace": namespace,
@@ -156,7 +129,7 @@ def generate_launch_description():
     start_map_trans_publisher = Node(
         package="tf2_ros",
         executable="static_transform_publisher",
-        name="sensorTransPublisher",
+        name="map2odom_trans_publisher",
         namespace=namespace,
         remappings=remappings,
         arguments=[
@@ -179,13 +152,19 @@ def generate_launch_description():
         ],
     )
 
+    start_far_planner = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(get_package_share_directory("far_planner"), "launch", "far_planner.launch.py")
+        ),
+        launch_arguments={
+            "namespace": namespace,
+            "config_path": tare_planner_config_path,
+        }.items(),
+    )
+
     start_visualization_tools = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(
-                get_package_share_directory("visualization_tools"),
-                "launch",
-                "visualization_tools.launch",
-            )
+            os.path.join(get_package_share_directory("visualization_tools"), "launch", "visualization_tools.launch")
         ),
         launch_arguments={
             "namespace": namespace,
@@ -234,6 +213,7 @@ def generate_launch_description():
     ld.add_action(TimerAction(period=5.0, actions=[start_terrain_analysis]))
     ld.add_action(TimerAction(period=5.0, actions=[start_terrain_analysis_ext]))
     ld.add_action(TimerAction(period=5.0, actions=[start_local_planner]))
+    ld.add_action(TimerAction(period=5.0, actions=[start_far_planner]))
     ld.add_action(TimerAction(period=5.0, actions=[start_map_trans_publisher]))
 
     # ld.add_action(start_visualization_tools)

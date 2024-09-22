@@ -4,3 +4,6 @@
 [submodule "point_lio"]
 	path = point_lio
 	url = https://github.com/LihanChen2004/Point-LIO
+[submodule "far_planner"]
+	path = far_planner
+	url = https://github.com/LihanChen2004/far_planner
