@@ -129,27 +129,16 @@ void odometryHandler(const nav_msgs::msg::Odometry::ConstSharedPtr odom)
   vehicleZ = odom->pose.pose.position.z;
 }
 
-void laserCloudHandler(const sensor_msgs::msg::PointCloud2::ConstSharedPtr laserCloud2)
+void laserCloudHandler(const sensor_msgs::msg::PointCloud2::ConstSharedPtr msg)
 {
   if (!useTerrainAnalysis) {
     laserCloud->clear();
-    pcl::fromROSMsg(*laserCloud2, *laserCloud);
+    pcl::fromROSMsg(*msg, *laserCloud);
 
-    pcl::PointXYZI point;
     laserCloudCrop->clear();
-    int laserCloudSize = laserCloud->points.size();
-    for (int i = 0; i < laserCloudSize; i++) {
-      point = laserCloud->points[i];
-
-      float pointX = point.x;
-      float pointY = point.y;
-      float pointZ = point.z;
-
-      float dis = sqrt((pointX - vehicleX) * (pointX - vehicleX) + (pointY - vehicleY) * (pointY - vehicleY));
+    for (const auto& point : laserCloud->points) {
+      float dis = sqrt((point.x - vehicleX) * (point.x - vehicleX) + (point.y - vehicleY) * (point.y - vehicleY));
       if (dis < adjacentRange) {
-        point.x = pointX;
-        point.y = pointY;
-        point.z = pointZ;
         laserCloudCrop->push_back(point);
       }
     }
@@ -162,27 +151,16 @@ void laserCloudHandler(const sensor_msgs::msg::PointCloud2::ConstSharedPtr laser
   }
 }
 
-void terrainCloudHandler(const sensor_msgs::msg::PointCloud2::ConstSharedPtr terrainCloud2)
+void terrainCloudHandler(const sensor_msgs::msg::PointCloud2::ConstSharedPtr msg)
 {
   if (useTerrainAnalysis) {
     terrainCloud->clear();
-    pcl::fromROSMsg(*terrainCloud2, *terrainCloud);
+    pcl::fromROSMsg(*msg, *terrainCloud);
 
-    pcl::PointXYZI point;
     terrainCloudCrop->clear();
-    int terrainCloudSize = terrainCloud->points.size();
-    for (int i = 0; i < terrainCloudSize; i++) {
-      point = terrainCloud->points[i];
-
-      float pointX = point.x;
-      float pointY = point.y;
-      float pointZ = point.z;
-
-      float dis = sqrt((pointX - vehicleX) * (pointX - vehicleX) + (pointY - vehicleY) * (pointY - vehicleY));
+    for (const auto& point : terrainCloud->points) {
+      float dis = sqrt((point.x - vehicleX) * (point.x - vehicleX) + (point.y - vehicleY) * (point.y - vehicleY));
       if (dis < adjacentRange && (point.intensity > obstacleHeightThre || useCost)) {
-        point.x = pointX;
-        point.y = pointY;
-        point.z = pointZ;
         terrainCloudCrop->push_back(point);
       }
     }
