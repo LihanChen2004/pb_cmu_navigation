@@ -27,7 +27,7 @@ def generate_launch_description():
 
     pkg_cmu_nav_bringup_dir = get_package_share_directory("cmu_nav_bringup")
     point_lio_config_path = os.path.join(pkg_cmu_nav_bringup_dir, "config", "simulation", "point_lio.yaml")
-    tare_planner_config_path = os.path.join(pkg_cmu_nav_bringup_dir, "config", "simulation", "tare_planner.yaml")
+    far_planner_config_path = os.path.join(pkg_cmu_nav_bringup_dir, "config", "simulation", "far_planner.yaml")
 
     declare_namespace = DeclareLaunchArgument(
         "namespace", default_value="red_standard_robot1", description=""
@@ -158,7 +158,7 @@ def generate_launch_description():
         ),
         launch_arguments={
             "namespace": namespace,
-            "config_path": tare_planner_config_path,
+            "config_path": far_planner_config_path,
         }.items(),
     )
 
@@ -198,13 +198,13 @@ def generate_launch_description():
 
     ld.add_action(start_point_lio_node)
     ld.add_action(start_velodyne_convert_tool)
-    ld.add_action(TimerAction(period=5.0, actions=[start_loam_interface]))
-    ld.add_action(TimerAction(period=5.0, actions=[start_sensor_scan_generation]))
-    ld.add_action(TimerAction(period=5.0, actions=[start_terrain_analysis]))
-    ld.add_action(TimerAction(period=5.0, actions=[start_terrain_analysis_ext]))
-    ld.add_action(TimerAction(period=5.0, actions=[start_local_planner]))
-    ld.add_action(TimerAction(period=5.0, actions=[start_far_planner]))
-    ld.add_action(TimerAction(period=5.0, actions=[start_map_trans_publisher]))
+    ld.add_action(TimerAction(period=1.0, actions=[start_loam_interface]))
+    ld.add_action(TimerAction(period=1.0, actions=[start_sensor_scan_generation]))
+    ld.add_action(TimerAction(period=1.0, actions=[start_terrain_analysis]))
+    ld.add_action(TimerAction(period=1.0, actions=[start_terrain_analysis_ext]))
+    ld.add_action(TimerAction(period=1.0, actions=[start_local_planner]))
+    ld.add_action(TimerAction(period=1.0, actions=[start_far_planner]))
+    ld.add_action(TimerAction(period=1.0, actions=[start_map_trans_publisher]))
 
     ld.add_action(start_joy)
     ld.add_action(start_rviz)
