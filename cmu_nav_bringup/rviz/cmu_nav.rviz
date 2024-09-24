@@ -438,7 +438,7 @@ Visualization Manager:
   Enabled: true
   Global Options:
     Background Color: 0; 0; 0
-    Fixed Frame: odom
+    Fixed Frame: map
     Frame Rate: 15
   Name: root
   Tools:

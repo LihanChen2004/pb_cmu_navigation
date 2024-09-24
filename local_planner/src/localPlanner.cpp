@@ -1,16 +1,4 @@
-#include <math.h>
-#include <time.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <chrono>
-#include <iostream>
-#include "rclcpp/rclcpp.hpp"
-#include "rclcpp/time.hpp"
-#include "rclcpp/clock.hpp"
-#include "builtin_interfaces/msg/time.hpp"
-
 #include "nav_msgs/msg/odometry.hpp"
-#include "sensor_msgs/msg/point_cloud2.hpp"
 #include <sensor_msgs/msg/joy.hpp>
 #include <std_msgs/msg/float32.hpp>
 #include <std_msgs/msg/bool.hpp>
@@ -18,11 +6,10 @@
 
 #include <geometry_msgs/msg/twist_stamped.hpp>
 #include <geometry_msgs/msg/point_stamped.hpp>
-#include <geometry_msgs/msg/polygon_stamped.hpp>
 #include <sensor_msgs/msg/imu.h>
 
-#include "tf2/transform_datatypes.h"
-#include "tf2_ros/transform_broadcaster.h"
+#include <tf2_ros/buffer.h>
+#include <tf2_ros/transform_listener.h>
 #include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
 
 #include <pcl/filters/voxel_grid.h>
@@ -31,19 +18,9 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
-#include "message_filters/subscriber.h"
-#include "message_filters/synchronizer.h"
-#include "message_filters/sync_policies/approximate_time.h"
-#include "rmw/types.h"
-#include "rmw/qos_profiles.h"
-
-using namespace std;
-
-const double PI = 3.1415926;
-
 #define PLOTPATHSET 1
 
-string pathFolder;
+std::string pathFolder;
 double vehicleLength = 0.6;
 double vehicleWidth = 0.6;
 double sensorOffsetX = 0;
@@ -82,8 +59,6 @@ double autonomySpeed = 1.0;
 double joyToSpeedDelay = 2.0;
 double joyToCheckObstacleDelay = 5.0;
 double goalClearRange = 0.5;
-double goalX = 0;
-double goalY = 0;
 
 float joySpeed = 0;
 float joySpeedRaw = 0;
@@ -131,9 +106,13 @@ double joyTime = 0;
 
 float vehicleRoll = 0, vehiclePitch = 0, vehicleYaw = 0;
 float vehicleX = 0, vehicleY = 0, vehicleZ = 0;
+float goalXInOdom, goalYInOdom;
 
 pcl::VoxelGrid<pcl::PointXYZI> laserDwzFilter, terrainDwzFilter;
 rclcpp::Node::SharedPtr nh;
+
+std::shared_ptr<tf2_ros::Buffer> tfBuffer;
+std::shared_ptr<tf2_ros::TransformListener> tfListener;
 
 void odometryHandler(const nav_msgs::msg::Odometry::ConstSharedPtr odom)
 {
@@ -225,29 +204,33 @@ void joystickHandler(const sensor_msgs::msg::Joy::ConstSharedPtr joy)
   //if (joy->axes[4] == 0) joySpeed = 0;
 
   if (joySpeed > 0) {
-    joyDir = atan2(joy->axes[3], joy->axes[4]) * 180 / PI;
+    joyDir = atan2(joy->axes[3], joy->axes[4]) * 180 / M_PI;
     //if (joy->axes[4] < 0) joyDir *= -1;
   }
 
   //if (joy->axes[4] < 0 && !twoWayDrive) joySpeed = 0;
 
-  if (joy->axes[2] > -0.1) {
-    autonomyMode = false;
-  } else {
-    autonomyMode = true;
-  }
+  autonomyMode = joy->axes[2] <= -0.1;
 
-  if (joy->axes[5] > -0.1) {
-    checkObstacle = true;
-  } else {
-    checkObstacle = false;
-  }
+  checkObstacle = joy->axes[5] > -0.1;
 }
 
 void goalHandler(const geometry_msgs::msg::PointStamped::ConstSharedPtr goal)
 {
-  goalX = goal->point.x;
-  goalY = goal->point.y;
+  try {
+    auto transform_stamped = tfBuffer->lookupTransform("odom", "map", tf2::TimePointZero);
+
+    tf2::Transform transform;
+    tf2::fromMsg(transform_stamped.transform, transform);
+
+    tf2::Vector3 goal_in_map(goal->point.x, goal->point.y, goal->point.z);
+    tf2::Vector3 goal_in_odom = transform * goal_in_map;
+
+    goalXInOdom = goal_in_odom.x();
+    goalYInOdom = goal_in_odom.y();
+  } catch (tf2::TransformException &ex) {
+    RCLCPP_WARN(nh->get_logger(), "Could not transform map to odom: %s", ex.what());
+  }
 }
 
 void speedHandler(const std_msgs::msg::Float32::ConstSharedPtr speed)
@@ -323,7 +306,7 @@ int readPlyHeader(FILE *filePtr)
 {
   char str[50];
   int val, pointNum;
-  string strCur, strLast;
+  std::string strCur, strLast;
   while (strCur != "end_header") {
     val = fscanf(filePtr, "%s", str);
     if (val != 1) {
@@ -332,7 +315,7 @@ int readPlyHeader(FILE *filePtr)
     }
 
     strLast = strCur;
-    strCur = string(str);
+    strCur = std::string(str);
 
     if (strCur == "vertex" && strLast == "element") {
       val = fscanf(filePtr, "%d", &pointNum);
@@ -348,7 +331,7 @@ int readPlyHeader(FILE *filePtr)
 
 void readStartPaths()
 {
-  string fileName = pathFolder + "/startPaths.ply";
+  std::string fileName = pathFolder + "/startPaths.ply";
 
   FILE *filePtr = fopen(fileName.c_str(), "r");
   if (filePtr == NULL) {
@@ -382,7 +365,7 @@ void readStartPaths()
 #if PLOTPATHSET == 1
 void readPaths()
 {
-  string fileName = pathFolder + "/paths.ply";
+  std::string fileName = pathFolder + "/paths.ply";
 
   FILE *filePtr = fopen(fileName.c_str(), "r");
   if (filePtr == NULL) {
@@ -423,7 +406,7 @@ void readPaths()
 
 void readPathList()
 {
-  string fileName = pathFolder + "/pathList.ply";
+  std::string fileName = pathFolder + "/pathList.ply";
 
   FILE *filePtr = fopen(fileName.c_str(), "r");
   if (filePtr == NULL) {
@@ -452,7 +435,7 @@ void readPathList()
 
     if (pathID >= 0 && pathID < pathNum && groupID >= 0 && groupID < groupNum) {
       pathList[pathID] = groupID;
-      endDirPathList[pathID] = 2.0 * atan2(endY, endX) * 180 / PI;
+      endDirPathList[pathID] = 2.0 * atan2(endY, endX) * 180 / M_PI;
     }
   }
 
@@ -461,7 +444,7 @@ void readPathList()
 
 void readCorrespondences()
 {
-  string fileName = pathFolder + "/correspondences.txt";
+  std::string fileName = pathFolder + "/correspondences.txt";
 
   FILE *filePtr = fopen(fileName.c_str(), "r");
   if (filePtr == NULL) {
@@ -539,8 +522,8 @@ int main(int argc, char** argv)
   nh->declare_parameter<double>("joyToSpeedDelay", joyToSpeedDelay);
   nh->declare_parameter<double>("joyToCheckObstacleDelay", joyToCheckObstacleDelay);
   nh->declare_parameter<double>("goalClearRange", goalClearRange);
-  nh->declare_parameter<double>("goalX", goalX);
-  nh->declare_parameter<double>("goalY", goalY);
+  nh->declare_parameter<double>("goalX", goalXInOdom);
+  nh->declare_parameter<double>("goalY", goalYInOdom);
 
   nh->get_parameter("pathFolder", pathFolder);
   nh->get_parameter("vehicleLength", vehicleLength);
@@ -579,8 +562,8 @@ int main(int argc, char** argv)
   nh->get_parameter("joyToSpeedDelay", joyToSpeedDelay);
   nh->get_parameter("joyToCheckObstacleDelay", joyToCheckObstacleDelay);
   nh->get_parameter("goalClearRange", goalClearRange);
-  nh->get_parameter("goalX", goalX);
-  nh->get_parameter("goalY", goalY);
+  nh->get_parameter("goalX", goalXInOdom);
+  nh->get_parameter("goalY", goalYInOdom);
 
   auto subOdometry = nh->create_subscription<nav_msgs::msg::Odometry>("odometry", 5, odometryHandler);
 
@@ -602,6 +585,9 @@ int main(int argc, char** argv)
 
   auto pubPath = nh->create_publisher<nav_msgs::msg::Path>("path", 5);
   nav_msgs::msg::Path path;
+
+  tfBuffer = std::make_shared<tf2_ros::Buffer>(nh->get_clock());
+  tfListener = std::make_shared<tf2_ros::TransformListener>(*tfBuffer);
 
   #if PLOTPATHSET == 1
   auto pubFreePaths = nh->create_publisher<sensor_msgs::msg::PointCloud2>("free_paths", 2);
@@ -730,11 +716,11 @@ int main(int argc, char** argv)
 
       float relativeGoalX = 0, relativeGoalY = 0;
       if (autonomyMode) {
-        relativeGoalX = ((goalX - vehicleX) * cosVehicleYaw + (goalY - vehicleY) * sinVehicleYaw);
-        relativeGoalY = (-(goalX - vehicleX) * sinVehicleYaw + (goalY - vehicleY) * cosVehicleYaw);
+        relativeGoalX = ((goalXInOdom - vehicleX) * cosVehicleYaw + (goalYInOdom - vehicleY) * sinVehicleYaw);
+        relativeGoalY = (-(goalXInOdom - vehicleX) * sinVehicleYaw + (goalYInOdom - vehicleY) * cosVehicleYaw);
 
         relativeGoalDis = sqrt(relativeGoalX * relativeGoalX + relativeGoalY * relativeGoalY);
-        joyDir = atan2(relativeGoalY, relativeGoalX) * 180 / PI;
+        joyDir = atan2(relativeGoalY, relativeGoalX) * 180 / M_PI;
 
         /*if (!twoWayDrive) {
           if (joyDir > 90.0) joyDir = 90.0;
@@ -759,7 +745,7 @@ int main(int argc, char** argv)
         float minObsAngCW = -180.0;
         float minObsAngCCW = 180.0;
         float diameter = sqrt(vehicleLength / 2.0 * vehicleLength / 2.0 + vehicleWidth / 2.0 * vehicleWidth / 2.0);
-        float angOffset = atan2(vehicleWidth, vehicleLength) * 180.0 / PI;
+        float angOffset = atan2(vehicleWidth, vehicleLength) * 180.0 / M_PI;
         int plannerCloudCropSize = plannerCloudCrop->points.size();
         for (int i = 0; i < plannerCloudCropSize; i++) {
           float x = plannerCloudCrop->points[i].x / pathScale;
@@ -769,7 +755,7 @@ int main(int argc, char** argv)
 
           if (dis < pathRange / pathScale && (dis <= (relativeGoalDis + goalClearRange) / pathScale || !pathCropByGoal) && checkObstacle) {
             for (int rotDir = 0; rotDir < 36; rotDir++) {
-              float rotAng = (10.0 * rotDir - 180.0) * PI / 180;
+              float rotAng = (10.0 * rotDir - 180.0) * M_PI / 180;
               float angDiff = fabs(joyDir - (10.0 * rotDir - 180.0));
               if (angDiff > 180.0) {
                 angDiff = 360.0 - angDiff;
@@ -805,7 +791,7 @@ int main(int argc, char** argv)
 
           if (dis < diameter / pathScale && (fabs(x) > vehicleLength / pathScale / 2.0 || fabs(y) > vehicleWidth / pathScale / 2.0) && 
               (h > obstacleHeightThre || !useTerrainAnalysis) && checkRotObstacle) {
-            float angObs = atan2(y, x) * 180.0 / PI;
+            float angObs = atan2(y, x) * 180.0 / M_PI;
             if (angObs > 0) {
               if (minObsAngCCW > angObs - angOffset) minObsAngCCW = angObs - angOffset;
               if (minObsAngCW < angObs + angOffset - 180.0) minObsAngCW = angObs + angOffset - 180.0;
@@ -857,10 +843,10 @@ int main(int argc, char** argv)
         int selectedGroupID = -1;
         for (int i = 0; i < 36 * groupNum; i++) {
           int rotDir = int(i / groupNum);
-          float rotAng = (10.0 * rotDir - 180.0) * PI / 180;
+          float rotAng = (10.0 * rotDir - 180.0) * M_PI / 180;
           float rotDeg = 10.0 * rotDir;
           if (rotDeg > 180.0) rotDeg -= 360.0;
-          if (maxScore < clearPathPerGroupScore[i] && ((rotAng * 180.0 / PI > minObsAngCW && rotAng * 180.0 / PI < minObsAngCCW) || 
+          if (maxScore < clearPathPerGroupScore[i] && ((rotAng * 180.0 / M_PI > minObsAngCW && rotAng * 180.0 / M_PI < minObsAngCCW) || 
               (rotDeg > minObsAngCW && rotDeg < minObsAngCCW && twoWayDrive) || !checkRotObstacle)) {
             maxScore = clearPathPerGroupScore[i];
             selectedGroupID = i;
@@ -869,7 +855,7 @@ int main(int argc, char** argv)
 
         if (selectedGroupID >= 0) {
           int rotDir = int(selectedGroupID / groupNum);
-          float rotAng = (10.0 * rotDir - 180.0) * PI / 180;
+          float rotAng = (10.0 * rotDir - 180.0) * M_PI / 180;
 
           selectedGroupID = selectedGroupID % groupNum;
           int selectedPathLength = startPaths[selectedGroupID]->points.size();
@@ -898,7 +884,7 @@ int main(int argc, char** argv)
           freePaths->clear();
           for (int i = 0; i < 36 * pathNum; i++) {
             int rotDir = int(i / pathNum);
-            float rotAng = (10.0 * rotDir - 180.0) * PI / 180;
+            float rotAng = (10.0 * rotDir - 180.0) * M_PI / 180;
             float rotDeg = 10.0 * rotDir;
             if (rotDeg > 180.0) rotDeg -= 360.0;
             float angDiff = fabs(joyDir - (10.0 * rotDir - 180.0));
@@ -907,7 +893,7 @@ int main(int argc, char** argv)
             }
             if ((angDiff > dirThre && !dirToVehicle) || (fabs(10.0 * rotDir - 180.0) > dirThre && fabs(joyDir) <= 90.0 && dirToVehicle) ||
                 ((10.0 * rotDir > dirThre && 360.0 - 10.0 * rotDir > dirThre) && fabs(joyDir) > 90.0 && dirToVehicle) || 
-                !((rotAng * 180.0 / PI > minObsAngCW && rotAng * 180.0 / PI < minObsAngCCW) || 
+                !((rotAng * 180.0 / M_PI > minObsAngCW && rotAng * 180.0 / M_PI < minObsAngCCW) || 
                 (rotDeg > minObsAngCW && rotDeg < minObsAngCCW && twoWayDrive) || !checkRotObstacle)) {
               continue;
             }
