@@ -1,0 +1,192 @@
+loam_interface:
+  ros__parameters:
+    stateEstimationTopic: "aft_mapped_to_init"
+    registeredScanTopic: "cloud_registered"
+    flipStateEstimation: False
+    flipRegisteredScan: False
+    sendTF: False
+    reverseTF: False
+
+sensor_scan_generation:
+  ros__parameters:
+    lidar_frame: "right_mid360"
+    vehicle_base_frame: "chassis"
+    vel_ref_frame: "gimbal_yaw"
+
+terrain_analysis:
+  ros__parameters:
+    scanVoxelSize: 0.05
+    decayTime: 2.0
+    noDecayDis: 4.0
+    clearingDis: 8.0
+    useSorting: True
+    quantileZ: 0.4
+    considerDrop: False
+    limitGroundLift: False
+    maxGroundLift: 0.15
+    clearDyObs: True
+    minDyObsDis: 0.3
+    minDyObsAngle: 0.0
+    minDyObsRelZ: -0.5
+    absDyObsRelZThre: 0.2
+    minDyObsVFOV: -16.0
+    maxDyObsVFOV: 16.0
+    minDyObsPointNum: 1
+    noDataObstacle: False
+    noDataBlockSkipNum: 0
+    minBlockPointNum: 10
+    vehicleHeight: 0.4
+    voxelPointUpdateThre: 100
+    voxelTimeUpdateThre: 2.0
+    minRelZ: -2.5
+    maxRelZ: 1.0
+    disRatioZ: 0.2
+
+terrain_analysis_ext:
+  ros__parameters:
+    scanVoxelSize: 0.1
+    decayTime: 10.0
+    noDecayDis: 0.0
+    clearingDis: 30.0
+    useSorting: False
+    quantileZ: 0.1
+    vehicleHeight: 0.4
+    voxelPointUpdateThre: 100
+    voxelTimeUpdateThre: 2.0
+    lowerBoundZ: -2.5
+    upperBoundZ: 1.0
+    disRatioZ: 0.1
+    checkTerrainConn: False                   # Check terrain connectivity
+    terrainConnThre: 0.5
+    terrainUnderVehicle: -0.75
+    ceilingFilteringThre: 2.0
+    localTerrainMapRadius: 4.0
+
+local_planner:
+  ros__parameters:
+    pathFolder: "src/local_planner/paths"
+    vehicleLength: 0.6
+    vehicleWidth: 0.45
+    sensorOffsetX: 0.0
+    sensorOffsetY: 0.0
+    twoWayDrive: True
+    laserVoxelSize: 0.05
+    terrainVoxelSize: 0.2
+    useTerrainAnalysis: True
+    checkObstacle: True
+    checkRotObstacle: False
+    adjacentRange: 4.25
+    obstacleHeightThre: 0.15
+    groundHeightThre: 0.1
+    costHeightThre: 0.1
+    costScore: 0.02
+    useCost: False
+    pointPerPathThre: 2
+    minRelZ: -0.5
+    maxRelZ: 0.25
+    maxSpeed: 2.0
+    dirWeight: 0.02
+    dirThre: 90.0
+    dirToVehicle: False
+    pathScale: 1.25
+    minPathScale: 0.75
+    pathScaleStep: 0.25
+    pathScaleBySpeed: True
+    minPathRange: 1.0
+    pathRangeStep: 0.5
+    pathRangeBySpeed: True
+    pathCropByGoal: True
+    autonomyMode: True
+    autonomySpeed: 2.0
+    joyToSpeedDelay: 2.0
+    joyToCheckObstacleDelay: 5.0
+    goalClearRange: 0.5
+    goalX: 0.0
+    goalY: 0.0
+
+path_follower:
+  ros__parameters:
+    sensorOffsetX: 0.0
+    sensorOffsetY: 0.0
+    pubSkipNum: 1
+    twoWayDrive: True
+    lookAheadDis: 0.5
+    yawRateGain: 7.5
+    stopYawRateGain: 7.5
+    maxYawRate: 90.0
+    maxSpeed: 2.0
+    maxAccel: 2.5
+    switchTimeThre: 1.0
+    stopDisThre: 0.2
+    slowDwnDisThre: 0.85
+    useInclRateToSlow: False
+    inclRateThre: 120.0
+    slowRate1: 0.25
+    slowRate2: 0.5
+    slowTime1: 2.0
+    slowTime2: 2.0
+    useInclToStop: False
+    inclThre: 45.0
+    stopTime: 5.0
+    autonomyMode: True
+    autonomySpeed: 2.0
+    joyToSpeedDelay: 2.0
+
+far_planner:
+  ros__parameters:
+    # Dynamic Planner Default Params
+    main_run_freq: 2.0
+    voxel_dim: 0.15                           # Unit: meter
+    robot_dim: 0.3                            # Unit: meter
+    vehicle_height: 0.4                       # Unit: meter
+    sensor_range: 30.0                        # Unit: meter
+    terrain_range: 15.0                       # Unit: meter
+    local_planner_range: 5.0                  # Unit: meter
+    visualize_ratio: 0.75
+    is_viewpoint_extend: True
+    is_multi_layer: True
+    is_opencv_visual: False                   # Obstacle Image Display
+    is_static_env: False
+    is_pub_boundary: False
+    is_debug_output: False
+    is_attempt_autoswitch: True               # Auto switch to attemptable navigation
+    world_frame: map
+
+    # Graph Messager
+    graph_msger/robot_id: 1                   # graph from robot id "0" is extracted from files
+
+    # Map Handler Params
+    map_handler/floor_height: 3.0             # Unit: meter
+    map_handler/cell_length: 5.0              # Unit: meter
+    map_handler/map_grid_max_length: 1000.0   # Unit: meter
+    map_handler/map_grad_max_height: 100.0    # Unit: meter
+
+    # Dynamic Planner Utility Params
+    util/angle_noise: 15.0                    # Unit: degree
+    util/accept_max_align_angle: 4.0          # Unit: degree
+    util/obs_inflate_size: 1
+    util/new_intensity_thred: 2.0
+    util/terrain_free_Z: 0.2
+    util/dyosb_update_thred: 4
+    util/new_point_counter: 5
+    util/dynamic_obs_dacay_time: 10.0         # Unit: second
+    util/new_points_decay_time: 1.0           # Unit: second
+
+    # Dynamic Graph Params
+    graph/connect_votes_size: 4
+    graph/clear_dumper_thred: 4
+    graph/node_finalize_thred: 6
+    graph/filter_pool_size: 12
+
+    # Corner Detector Params
+    c_detector/resize_ratio: 3.0
+    c_detector/filter_count_value: 3
+    c_detector/is_save_img: False
+    c_detector/img_folder_path: /path
+
+    # Graph Planner Params
+    g_planner/converge_distance: 0.5          # Unit: meter
+    g_planner/goal_adjust_radius: 2.0         # Unit: meter
+    g_planner/free_counter_thred: 7
+    g_planner/reach_goal_vote_size: 3
+    g_planner/path_momentum_thred: 3
