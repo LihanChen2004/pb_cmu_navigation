@@ -74,6 +74,20 @@ Visualization Manager:
       Update Interval: 0
       Value: true
     - Alpha: 0.5
+      Class: rviz_default_plugins/Map
+      Color Scheme: map
+      Draw Behind: true
+      Enabled: true
+      Name: Map
+      Topic:
+        Depth: 1
+        Durability Policy: Transient Local
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: <robot_namespace>/map
+      Use Timestamp: false
+      Value: true
+    - Alpha: 0.5
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
         Max Value: 0.9582680463790894

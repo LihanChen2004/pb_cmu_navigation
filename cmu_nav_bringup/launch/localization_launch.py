@@ -36,6 +36,8 @@ def generate_launch_description():
     use_respawn = LaunchConfiguration("use_respawn")
     log_level = LaunchConfiguration("log_level")
 
+    lifecycle_nodes = ["map_server", "amcl"]
+
     pose = {
         "x": LaunchConfiguration("x_pose", default="-0.00"),
         "y": LaunchConfiguration("y_pose", default="-0.00"),
@@ -51,7 +53,7 @@ def generate_launch_description():
     remappings = [("/tf", "tf"), ("/tf_static", "tf_static")]
 
     # Create our own temporary YAML files that include substitutions
-    param_substitutions = {"use_sim_time": use_sim_time, "yaml_filename": map_yaml_file}
+    param_substitutions = {"use_sim_time": use_sim_time}
 
     configured_params = ParameterFile(
         RewrittenYaml(
@@ -87,12 +89,6 @@ def generate_launch_description():
         description="Full path to the ROS2 parameters file to use for all launched nodes",
     )
 
-    declare_container_name_cmd = DeclareLaunchArgument(
-        "container_name",
-        default_value="nav2_container",
-        description="the name of conatiner that nodes will load in if use composition",
-    )
-
     declare_use_respawn_cmd = DeclareLaunchArgument(
         "use_respawn",
         default_value="False",
@@ -112,7 +108,7 @@ def generate_launch_description():
                 output="screen",
                 respawn=use_respawn,
                 respawn_delay=2.0,
-                parameters=[configured_params],
+                parameters=[configured_params, {"yaml_filename": map_yaml_file}],
                 arguments=["--ros-args", "--log-level", log_level],
                 remappings=remappings,
             ),
@@ -136,6 +132,14 @@ def generate_launch_description():
                 arguments=["--ros-args", "--log-level", log_level],
                 remappings=remappings,
             ),
+            Node(
+                package="nav2_lifecycle_manager",
+                executable="lifecycle_manager",
+                name="lifecycle_manager_localization",
+                output="screen",
+                arguments=["--ros-args", "--log-level", log_level],
+                parameters=[{"autostart": True}, {"node_names": lifecycle_nodes}],
+            ),
         ],
     )
 
@@ -150,7 +154,6 @@ def generate_launch_description():
     ld.add_action(declare_map_yaml_cmd)
     ld.add_action(declare_use_sim_time_cmd)
     ld.add_action(declare_params_file_cmd)
-    ld.add_action(declare_container_name_cmd)
     ld.add_action(declare_use_respawn_cmd)
     ld.add_action(declare_log_level_cmd)
 

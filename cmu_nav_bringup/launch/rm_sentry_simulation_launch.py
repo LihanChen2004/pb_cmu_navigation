@@ -6,7 +6,7 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 
 from launch_ros.actions import Node
 
@@ -19,6 +19,7 @@ def generate_launch_description():
     # Create the launch configuration variables
     namespace = LaunchConfiguration("namespace")
     use_namespace = LaunchConfiguration("use_namespace")
+    world = LaunchConfiguration("world")
     map_yaml_file = LaunchConfiguration("map")
     use_sim_time = LaunchConfiguration("use_sim_time")
     params_file = LaunchConfiguration("params_file")
@@ -28,11 +29,18 @@ def generate_launch_description():
     rviz_config_file = LaunchConfiguration("rviz_config_file")
     use_rviz = LaunchConfiguration("use_rviz")
 
-    point_lio_config_path = os.path.join(bringup_dir, "config", "simulation", "point_lio.yaml")
+    map_yaml_file = PathJoinSubstitution([bringup_dir, "map", world]), ".yaml"
+    point_lio_config_file = os.path.join(bringup_dir, "config", "simulation", "point_lio.yaml")
 
     remappings = [("/tf", "tf"), ("/tf_static", "tf_static")]
 
     # Declare the launch arguments
+    declare_world_cmd = DeclareLaunchArgument(
+        "world",
+        default_value="rmul_2024",
+        description="Select world: 'rmul_2024' or 'rmuc_2024' (map file share the same name as the this parameter)"
+    )
+
     declare_namespace_cmd = DeclareLaunchArgument(
         "namespace", default_value="red_standard_robot1", description="Top-level namespace"
     )
@@ -45,7 +53,7 @@ def generate_launch_description():
 
     declare_map_yaml_cmd = DeclareLaunchArgument(
         "map",
-        default_value=os.path.join(bringup_dir, "map", "rmul_2024.yaml"),
+        default_value=os.path.join(bringup_dir, "map", "rmuc_2024.yaml"),
     )
 
     declare_use_sim_time_cmd = DeclareLaunchArgument(
@@ -100,7 +108,7 @@ def generate_launch_description():
         name="point_lio",
         output="screen",
         namespace=namespace,
-        parameters=[point_lio_config_path],
+        parameters=[point_lio_config_file],
         remappings=remappings,
     )
 
@@ -175,7 +183,7 @@ def generate_launch_description():
     # Declare the launch options
     ld.add_action(declare_namespace_cmd)
     ld.add_action(declare_use_namespace_cmd)
-    ld.add_action(declare_map_yaml_cmd)
+    ld.add_action(declare_world_cmd)
     ld.add_action(declare_use_sim_time_cmd)
     ld.add_action(declare_params_file_cmd)
 
