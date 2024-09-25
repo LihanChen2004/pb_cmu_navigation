@@ -10,6 +10,8 @@
 
 ![spin_nav.gif](https://raw.githubusercontent.com/LihanChen2004/picx-images-hosting/master/spin_nav.1ove3nw63o.gif)
 
+![rmuc_fly.gif](https://raw.githubusercontent.com/LihanChen2004/picx-images-hosting/master/rmuc_fly_image.1aoyoashvj.gif)
+
 ## 一. 项目介绍
 
 本项目基于 [CMU 导航框架](https://github.com/HongbiaoZ/autonomous_exploration_development_environment/tree/humble) 开发，主要修改内容如下：
@@ -71,6 +73,37 @@
 
 ## 三. 运行
 
-```zsh
-ros2 launch cmu_nav_bringup rm_sentry_simulation_launch.py
-```
+- 可选参数
+
+  - `world` : 仿真世界名（ `rmul_2024` or `rmuc_2024` ）。当前仅关联栅格地图的读取，不影响实际功能运行。
+
+- 单机器人
+
+    ```zsh
+    ros2 launch cmu_nav_bringup rm_sentry_simulation_launch.py
+    world:=rmul_2024
+    ```
+
+- 多机器人
+
+    当前指定的初始位姿实际上是无效的（）
+
+    TODO: 加入 `map` -> `odom` 的变换和初始化
+
+    ```zsh
+    ros2 launch cmu_nav_bringup rm_multi_sentry_simulation_launch.py \
+    world:=rmul_2024 \
+    robots:=" \
+    red_standard_robot1={x: 0.0, y: 0.0, yaw: 0.0}; \
+    blue_standard_robot1={x: 5.6, y: 1.4, yaw: 3.14}; \
+    "
+    ```
+
+    ```zsh
+    ros2 launch cmu_nav_bringup rm_multi_sentry_simulation_launch.py \
+    world:=rmuc_2024 \
+    robots:=" \
+    red_standard_robot1={x: 0.0, y: 0.0, yaw: 0.0}; \
+    blue_standard_robot1={x: 0.0, y: 0.0, yaw: 0.0}; \
+    "
+    ```
