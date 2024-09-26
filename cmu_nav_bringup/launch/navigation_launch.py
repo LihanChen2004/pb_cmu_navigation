@@ -19,6 +19,8 @@ def generate_launch_description():
     use_respawn = LaunchConfiguration("use_respawn")
     log_level = LaunchConfiguration("log_level")
 
+    lifecycle_nodes = ['bt_navigator', 'planner_server']
+
     # Map fully qualified names to relative ones so the node"s namespace can be prepended.
     # In case of the transforms (tf), currently, there doesn"t seem to be a better alternative
     # https://github.com/ros/geometry2/issues/32
@@ -149,6 +151,38 @@ def generate_launch_description():
             #     arguments=["--ros-args", "--log-level", log_level],
             #     remappings=remappings,
             # ),
+            Node(
+                package='nav2_bt_navigator',
+                executable='bt_navigator',
+                name='bt_navigator',
+                output='screen',
+                respawn=use_respawn,
+                respawn_delay=2.0,
+                parameters=[configured_params],
+                arguments=['--ros-args', '--log-level', log_level],
+                remappings=remappings
+            ),
+            Node(
+                package='nav2_planner',
+                executable='planner_server',
+                name='planner_server',
+                output='screen',
+                respawn=use_respawn,
+                respawn_delay=2.0,
+                parameters=[configured_params],
+                arguments=['--ros-args', '--log-level', log_level],
+                remappings=remappings
+            ),
+            Node(
+                package='nav2_lifecycle_manager',
+                executable='lifecycle_manager',
+                name='lifecycle_manager_navigation',
+                output='screen',
+                arguments=['--ros-args', '--log-level', log_level],
+                parameters=[{'use_sim_time': use_sim_time},
+                            {'autostart': True},
+                            {'node_names': lifecycle_nodes}]
+            ),
         ],
     )
 
