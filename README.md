@@ -8,9 +8,13 @@
 
 深圳北理莫斯科大学 北极熊战队 2025赛季哨兵导航仿真/实车包
 
-![spin_nav.gif](https://raw.githubusercontent.com/LihanChen2004/picx-images-hosting/master/spin_nav.1ove3nw63o.gif)
+| rmul_2024 小陀螺 | rmuc_2024 赛博飞坡 + 先验 pcd 里程计 |
+|:-----------------:|:--------------:|
+|![spin_nav.gif](https://raw.githubusercontent.com/LihanChen2004/picx-images-hosting/master/spin_nav.1ove3nw63o.gif)|![rmuc_fly.gif](https://raw.githubusercontent.com/LihanChen2004/picx-images-hosting/master/rmuc_fly_image.1aoyoashvj.gif)|
 
-![rmuc_fly.gif](https://raw.githubusercontent.com/LihanChen2004/picx-images-hosting/master/rmuc_fly_image.1aoyoashvj.gif)
+| 使用 NAV2 输出全局路径 |
+|:-------------:|
+|![nav_with_global_path](https://raw.githubusercontent.com/LihanChen2004/picx-images-hosting/master/nav_with_global_path.6ik9ck07h1.gif)|
 
 ## 一. 项目介绍
 
@@ -26,11 +30,14 @@
 
 5. 抛弃了 vehicle_simulator 中的节点，改为接收 Ignition Fortress 的 Pointcloud2 消息，再经过 ign_sim_pointcloud_tool 处理添加每个 point 的时间戳，再交由 LIO 输出 lidar_odometry。更加贴近实车情况。
 
+6. 使用 NAV2 的 Global Planner 作为全局路径规划器，再从 Global Plan 中裁剪出目标点，交由 CMU 的 Local Planner 进行局部路径规划。
+
 ## 二. 环境配置
 
 - Ubuntu 22.04
 - ROS: [Humble](https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debs.html)
 - Ignition: [Fortress](https://gazebosim.org/docs/fortress/install_ubuntu/)
+- 配套仿真包：[rm_gazebo_simulator](https://github.com/LihanChen2004/rmul24_gazebo_simulator)
 
 1. 安装 [Livox SDK2](https://github.com/Livox-SDK/Livox-SDK2)
 
@@ -75,7 +82,15 @@
 
 - 可选参数
 
-  - `world` : 仿真世界名（ `rmul_2024` or `rmuc_2024` ）。当前仅关联栅格地图的读取，不影响实际功能运行。
+  - `world` : 仿真世界名，关联栅格地图的读取。可选参数 `rmul_2024` or `rmuc_2024`。。
+
+- RVIZ 插件
+
+  `Way Point`: 规划局部路径
+
+  `2D Goal Pose`: 规划全局路径
+
+  `Goal Point`: Far Planner 的全局路径规划（即将弃用）
 
 - 单机器人
 
