@@ -80,7 +80,7 @@
 - 单机器人
 
     ```zsh
-    ros2 launch cmu_nav_bringup rm_sentry_simulation_launch.py
+    ros2 launch cmu_nav_bringup rm_sentry_simulation_launch.py \
     world:=rmul_2024
     ```
 
