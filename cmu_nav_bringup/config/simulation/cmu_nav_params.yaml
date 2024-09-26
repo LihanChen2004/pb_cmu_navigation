@@ -103,6 +103,7 @@ local_planner:
     goalClearRange: 0.5
     goalX: 0.0
     goalY: 0.0
+    lookaheadDis: 1.0
 
 path_follower:
   ros__parameters:

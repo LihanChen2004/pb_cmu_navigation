@@ -108,6 +108,9 @@ float vehicleRoll = 0, vehiclePitch = 0, vehicleYaw = 0;
 float vehicleX = 0, vehicleY = 0, vehicleZ = 0;
 float goalXInOdom, goalYInOdom;
 
+nav_msgs::msg::Path globalPath;
+float lookaheadDis = 1.0;
+
 pcl::VoxelGrid<pcl::PointXYZI> laserDwzFilter, terrainDwzFilter;
 rclcpp::Node::SharedPtr nh;
 
@@ -211,6 +214,11 @@ void goalHandler(const geometry_msgs::msg::PointStamped::ConstSharedPtr goal)
   }
 }
 
+void planHandler(const nav_msgs::msg::Path::ConstSharedPtr plan)
+{
+  globalPath = *plan;
+}
+
 void speedHandler(const std_msgs::msg::Float32::ConstSharedPtr speed)
 {
   double speedTime = nh->now().seconds();
@@ -279,6 +287,51 @@ void checkObstacleHandler(const std_msgs::msg::Bool::ConstSharedPtr checkObs)
     checkObstacle = checkObs->data;
   }
 }
+
+std::optional<geometry_msgs::msg::PointStamped> selectGoalPointFromGlobal(float desiredDistance)
+{
+  if (globalPath.poses.empty()) {
+    return std::nullopt;
+  }
+
+  float minDistance = std::numeric_limits<float>::max();
+  size_t closestPointIdx = 0;
+
+  // Find the closest global path point to the vehicle's current position
+  for (size_t i = 0; i < globalPath.poses.size(); ++i) {
+    float dx = globalPath.poses[i].pose.position.x - vehicleX;
+    float dy = globalPath.poses[i].pose.position.y - vehicleY;
+    float distance = std::hypot(dx, dy);
+    if (distance < minDistance) {
+      minDistance = distance;
+      closestPointIdx = i;
+    }
+  }
+
+  // Accumulate distance from the closest point to find the goal point
+  float accumulatedDistance = 0.0;
+  for (size_t i = closestPointIdx; i < globalPath.poses.size(); ++i) {
+    if (i > closestPointIdx) {
+      float dx = globalPath.poses[i].pose.position.x - globalPath.poses[i - 1].pose.position.x;
+      float dy = globalPath.poses[i].pose.position.y - globalPath.poses[i - 1].pose.position.y;
+      accumulatedDistance += std::hypot(dx, dy);
+    }
+
+    if (accumulatedDistance >= desiredDistance) {
+      geometry_msgs::msg::PointStamped goalPoint;
+      goalPoint.header = globalPath.header;
+      goalPoint.point = globalPath.poses[i].pose.position;
+      return goalPoint;
+    }
+  }
+
+  // If no suitable goal point is found, return the last point of the global path
+  geometry_msgs::msg::PointStamped goalPoint;
+  goalPoint.header = globalPath.header;
+  goalPoint.point = globalPath.poses.back().pose.position;
+  return goalPoint;
+}
+
 
 int readPlyHeader(FILE *filePtr)
 {
@@ -502,6 +555,7 @@ int main(int argc, char** argv)
   nh->declare_parameter<double>("goalClearRange", goalClearRange);
   nh->declare_parameter<double>("goalX", goalXInOdom);
   nh->declare_parameter<double>("goalY", goalYInOdom);
+  nh->declare_parameter<double>("lookaheadDis", lookaheadDis);
 
   nh->get_parameter("pathFolder", pathFolder);
   nh->get_parameter("vehicleLength", vehicleLength);
@@ -542,6 +596,7 @@ int main(int argc, char** argv)
   nh->get_parameter("goalClearRange", goalClearRange);
   nh->get_parameter("goalX", goalXInOdom);
   nh->get_parameter("goalY", goalYInOdom);
+  nh->get_parameter("lookaheadDis", lookaheadDis);
 
   auto subOdometry = nh->create_subscription<nav_msgs::msg::Odometry>("odometry", 5, odometryHandler);
 
@@ -552,6 +607,8 @@ int main(int argc, char** argv)
   auto subJoystick = nh->create_subscription<sensor_msgs::msg::Joy>("joy", 5, joystickHandler);
 
   auto subGoal = nh->create_subscription<geometry_msgs::msg::PointStamped> ("way_point", 5, goalHandler);
+
+  auto subPlan = nh->create_subscription<nav_msgs::msg::Path>("plan", 5, planHandler);
 
   auto subSpeed = nh->create_subscription<std_msgs::msg::Float32>("speed", 5, speedHandler);
 
@@ -614,6 +671,12 @@ int main(int argc, char** argv)
   while (status) {
     rclcpp::spin_some(nh);
 
+    auto selectedGoalPoint = selectGoalPointFromGlobal(lookaheadDis);
+
+    if (selectedGoalPoint) {
+      goalHandler(std::make_shared<geometry_msgs::msg::PointStamped>(*selectedGoalPoint));
+    }
+
     if (newLaserCloud || newTerrainCloud) {
       if (newLaserCloud) {
         newLaserCloud = false;
@@ -623,8 +686,8 @@ int main(int argc, char** argv)
         laserCloudCount = (laserCloudCount + 1) % laserCloudStackNum;
 
         plannerCloud->clear();
-        for (int i = 0; i < laserCloudStackNum; i++) {
-          *plannerCloud += *laserCloudStack[i];
+        for (auto & i : laserCloudStack) {
+          *plannerCloud += *i;
         }
       }
 
