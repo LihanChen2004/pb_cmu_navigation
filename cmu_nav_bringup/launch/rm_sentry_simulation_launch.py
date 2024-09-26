@@ -51,11 +51,6 @@ def generate_launch_description():
         description="Whether to apply a namespace to the navigation stack",
     )
 
-    declare_map_yaml_cmd = DeclareLaunchArgument(
-        "map",
-        default_value=os.path.join(bringup_dir, "map", "rmuc_2024.yaml"),
-    )
-
     declare_use_sim_time_cmd = DeclareLaunchArgument(
         "use_sim_time",
         default_value="True",
