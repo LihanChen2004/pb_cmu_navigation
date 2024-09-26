@@ -78,6 +78,10 @@
     colcon build --symlink-install -DCMAKE_BUILD_TYPE=Release
     ```
 
+5. 下载先验点云
+
+    先验点云用于 point_lio 初始化，由于点云文件体积较大，故不放在 git 中，可前往 [FlowUs](https://flowus.cn/lihanchen/share/87f81771-fc0c-4e09-a768-db01f4c136f4?code=4PP1RS) 下载。也可以选择不使用先验点云，只需要到 [point_lio.yaml](./cmu_nav_bringup/config/simulation/point_lio.yaml) 中将 `prior_pcd.enable` 设置为 `False` 即可。
+
 ## 三. 运行
 
 - 可选参数

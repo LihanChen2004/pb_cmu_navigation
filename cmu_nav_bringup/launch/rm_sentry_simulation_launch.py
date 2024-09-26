@@ -30,6 +30,7 @@ def generate_launch_description():
     use_rviz = LaunchConfiguration("use_rviz")
 
     map_yaml_file = PathJoinSubstitution([bringup_dir, "map", world]), ".yaml"
+    prior_pcd_file = PathJoinSubstitution([bringup_dir, "pcd", "simulation", world]), ".pcd"
     point_lio_config_file = os.path.join(bringup_dir, "config", "simulation", "point_lio.yaml")
 
     remappings = [("/tf", "tf"), ("/tf_static", "tf_static")]
@@ -103,7 +104,7 @@ def generate_launch_description():
         name="point_lio",
         output="screen",
         namespace=namespace,
-        parameters=[point_lio_config_file],
+        parameters=[point_lio_config_file, {"prior_pcd.prior_pcd_map_path": prior_pcd_file}],
         remappings=remappings,
     )
 
