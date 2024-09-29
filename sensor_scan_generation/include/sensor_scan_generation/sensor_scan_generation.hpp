@@ -57,7 +57,7 @@ private:
   std::unique_ptr<message_filters::Synchronizer<SyncPolicy>> sync_;
 
   bool gimbal_to_lidar_initialized_;
-  tf2::Transform tf_chassis_to_gimbal_;
+  tf2::Transform tf_gimbal_to_lidar_;
 };
 
 }  // namespace sensor_scan_generation

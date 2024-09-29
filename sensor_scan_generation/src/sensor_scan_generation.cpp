@@ -60,7 +60,7 @@ void SensorScanGenerationNode::laserCloudAndOdometryHandler(
 
   if (!gimbal_to_lidar_initialized_) {
     try {
-      tf_chassis_to_gimbal_ = getTransform(lidar_frame_, vel_ref_frame_, pcd_msg->header.stamp);
+      tf_gimbal_to_lidar_ = getTransform(lidar_frame_, vel_ref_frame_, pcd_msg->header.stamp);
       gimbal_to_lidar_initialized_ = true;
     } catch (tf2::TransformException & ex) {
       RCLCPP_WARN(this->get_logger(), "%s", ex.what());
@@ -80,11 +80,11 @@ void SensorScanGenerationNode::laserCloudAndOdometryHandler(
   tf2::fromMsg(odometry_msg->pose.pose, tf_odom_to_lidar);
 
   tf2::Transform tf_odom_to_chassis = tf_odom_to_lidar * tf_chassis_to_lidar;
-  tf2::Transform tf_odom_to_gimbal = tf_odom_to_lidar * tf_chassis_to_gimbal_;
+  tf2::Transform tf_odom_to_gimbal = tf_odom_to_lidar * tf_gimbal_to_lidar_;
 
   // Publish transformations and odometry
-  publishTransform(tf_odom_to_chassis, "odom", vehicle_base_frame_, pcd_msg->header.stamp);
-  publishOdometry(tf_odom_to_gimbal, "odom", vel_ref_frame_, pcd_msg->header.stamp);
+  publishTransform(tf_odom_to_chassis, odometry_msg->header.frame_id, vehicle_base_frame_, pcd_msg->header.stamp);
+  publishOdometry(tf_odom_to_gimbal, odometry_msg->header.frame_id, vel_ref_frame_, pcd_msg->header.stamp);
 
   // Transform point cloud (odom -> lidar)
   Eigen::Matrix4f transform_matrix;
