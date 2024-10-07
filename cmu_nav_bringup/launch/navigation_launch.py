@@ -46,6 +46,10 @@ def generate_launch_description():
         "RCUTILS_LOGGING_BUFFERED_STREAM", "1"
     )
 
+    colorized_output_envvar = SetEnvironmentVariable(
+        "RCUTILS_COLORIZED_OUTPUT", "1"
+    )
+
     declare_namespace_cmd = DeclareLaunchArgument(
         "namespace", default_value="", description="Top-level namespace"
     )
@@ -191,6 +195,7 @@ def generate_launch_description():
 
     # Set environment variables
     ld.add_action(stdout_linebuf_envvar)
+    ld.add_action(colorized_output_envvar)
 
     # Declare the launch options
     ld.add_action(declare_namespace_cmd)
