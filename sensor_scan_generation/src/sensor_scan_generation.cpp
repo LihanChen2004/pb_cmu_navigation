@@ -84,7 +84,7 @@ void SensorScanGenerationNode::laserCloudAndOdometryHandler(
 
   // Publish transformations and odometry
   publishTransform(tf_odom_to_chassis, odometry_msg->header.frame_id, vehicle_base_frame_, pcd_msg->header.stamp);
-  publishOdometry(tf_odom_to_gimbal, odometry_msg->header.frame_id, vel_ref_frame_, pcd_msg->header.stamp);
+  publishOdometry(tf_odom_to_gimbal, odometry_msg, vel_ref_frame_, pcd_msg->header.stamp);
 
   // Transform point cloud (odom -> lidar)
   Eigen::Matrix4f transform_matrix;
@@ -128,18 +128,24 @@ void SensorScanGenerationNode::publishTransform(
 }
 
 void SensorScanGenerationNode::publishOdometry(
-  const tf2::Transform & transform, const std::string & frame_id, const std::string & child_frame,
+  const tf2::Transform & transform, nav_msgs::msg::Odometry::ConstSharedPtr odom_in, const std::string & child_frame,
   const rclcpp::Time & stamp)
 {
-  nav_msgs::msg::Odometry odom_msg;
-  odom_msg.header.stamp = stamp;
-  odom_msg.header.frame_id = frame_id;
-  odom_msg.child_frame_id = child_frame;
-  odom_msg.pose.pose.position.x = transform.getOrigin().x();
-  odom_msg.pose.pose.position.y = transform.getOrigin().y();
-  odom_msg.pose.pose.position.z = transform.getOrigin().z();
-  odom_msg.pose.pose.orientation = tf2::toMsg(transform.getRotation());
-  pub_chassis_odometry_->publish(odom_msg);
+  nav_msgs::msg::Odometry out;
+  out.header.stamp = stamp;
+  out.header.frame_id = odom_in->header.frame_id;
+  out.child_frame_id = child_frame;
+
+  const auto & origin = transform.getOrigin();
+  out.pose.pose.position.x = origin.x();
+  out.pose.pose.position.y = origin.y();
+  out.pose.pose.position.z = origin.z();
+  out.pose.pose.orientation = tf2::toMsg(transform.getRotation());
+
+  out.pose.covariance = odom_in->pose.covariance;
+  out.twist = odom_in->twist;
+
+  pub_chassis_odometry_->publish(out);
 }
 
 }  // namespace sensor_scan_generation
