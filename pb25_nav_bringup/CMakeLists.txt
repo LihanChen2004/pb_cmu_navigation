@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(cmu_nav_bringup)
+project(pb2025_nav_bringup)
 
 find_package(ament_cmake_auto REQUIRED)
 

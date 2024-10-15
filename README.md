@@ -85,7 +85,7 @@
 
 5. 下载先验点云
 
-    先验点云用于 point_lio 初始化，由于点云文件体积较大，故不放在 git 中，可前往 [FlowUs](https://flowus.cn/lihanchen/share/87f81771-fc0c-4e09-a768-db01f4c136f4?code=4PP1RS) 下载。也可以选择不使用先验点云，只需要到 [point_lio.yaml](./cmu_nav_bringup/config/simulation/point_lio.yaml) 中将 `prior_pcd.enable` 设置为 `False` 即可。
+    先验点云用于 point_lio 初始化，由于点云文件体积较大，故不放在 git 中，可前往 [FlowUs](https://flowus.cn/lihanchen/share/87f81771-fc0c-4e09-a768-db01f4c136f4?code=4PP1RS) 下载。也可以选择不使用先验点云，只需要到 [point_lio.yaml](./pb2025_nav_bringup/config/simulation/point_lio.yaml) 中将 `prior_pcd.enable` 设置为 `False` 即可。
 
     > [!NOTE]  
     > 当前 point_lio with prior_pcd 在 rmuc_2024 的效果并不好，比不带先验点云更容易飘，待 Debug 优化。
@@ -97,7 +97,7 @@
 仅保留了局部规划器及其依赖功能包，仅作为一个游玩性 demo。可使用以下命令启动，然后在 RViz 中使用 `Waypoint` 插件发布目标点，或使用 PS3/4 手柄控制机器人。
 
 ```zsh
-ros2 launch cmu_nav_bringup demo_cmu_launch.py \
+ros2 launch pb2025_nav_bringup demo_cmu_launch.py \
 world:=rmul_2024
 ```
 
@@ -110,7 +110,7 @@ world:=rmul_2024
 - 单机器人
 
     ```zsh
-    ros2 launch cmu_nav_bringup rm_sentry_simulation_launch.py \
+    ros2 launch pb2025_nav_bringup rm_sentry_simulation_launch.py \
     world:=rmul_2024
     ```
 
@@ -121,7 +121,7 @@ world:=rmul_2024
     TODO: 加入 `map` -> `odom` 的变换和初始化
 
     ```zsh
-    ros2 launch cmu_nav_bringup rm_multi_sentry_simulation_launch.py \
+    ros2 launch pb2025_nav_bringup rm_multi_sentry_simulation_launch.py \
     world:=rmul_2024 \
     robots:=" \
     red_standard_robot1={x: 0.0, y: 0.0, yaw: 0.0}; \

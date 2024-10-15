@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>cmu_nav_bringup</name>
+  <name>pb2025_nav_bringup</name>
   <version>0.0.0</version>
-  <description>cmu_nav_bringup</description>
+  <description>pb2025_nav_bringup</description>
   <maintainer email="lihanchen2004@163.com">Lihan Chen</maintainer>
   <license>MIT</license>
 

@@ -14,7 +14,7 @@ from nav2_common.launch import RewrittenYaml
 
 def generate_launch_description():
     # Get the launch directory
-    bringup_dir = get_package_share_directory('cmu_nav_bringup')
+    bringup_dir = get_package_share_directory('pb2025_nav_bringup')
 
     namespace = LaunchConfiguration('namespace')
     map_yaml_file = LaunchConfiguration('map')
