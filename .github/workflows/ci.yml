@@ -7,14 +7,17 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     container:
       image: rostooling/setup-ros-docker:ubuntu-jammy-ros-humble-desktop-latest
     steps:
+      - uses: actions/checkout@v4
+
       - name: Setup ROS 2
         uses: ros-tooling/setup-ros@v0.7
         with:
           required-ros-distributions: humble
+
       - name: Install Livox SDK
         run: |
           git clone https://github.com/Livox-SDK/Livox-SDK2.git
@@ -23,6 +26,7 @@ jobs:
           cd build
           cmake .. && make -j
           sudo make install
+
       - name: Build pb2025_sentry_nav
         uses: ros-tooling/action-ros-ci@v0.3
         with:
