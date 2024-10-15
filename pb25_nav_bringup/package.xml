@@ -9,7 +9,7 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <depend>pb_cmu_navigation</depend>
+  <depend>pb2025_sentry_nav</depend>
   <depend>livox_ros_driver2</depend>
   <depend>ign_sim_pointcloud_tool</depend>
   <depend>point_lio</depend>

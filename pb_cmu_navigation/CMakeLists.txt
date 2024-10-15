@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(pb_cmu_navigation)
+project(pb2025_sentry_nav)
 
 find_package(ament_cmake_auto REQUIRED)
 

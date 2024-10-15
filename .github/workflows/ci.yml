@@ -15,8 +15,8 @@ jobs:
         uses: ros-tooling/setup-ros@v0.7
         with:
           required-ros-distributions: humble
-      - name: Build pb_cmu_navigation
+      - name: Build pb2025_sentry_nav
         uses: ros-tooling/action-ros-ci@v0.3
         with:
-          package-name: pb_cmu_navigation
+          package-name: pb2025_sentry_nav
           target-ros2-distro: humble

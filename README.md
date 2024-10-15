@@ -1,7 +1,7 @@
-# pb_cmu_navigation
+# pb2025_sentry_nav
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Build](https://github.com/LihanChen2004/pb_cmu_navigation/actions/workflows/ci.yml/badge.svg?branch=humble)](https://github.com/LihanChen2004/pb_cmu_navigation/actions/workflows/ci.yml)
+[![Build](https://github.com/LihanChen2004/pb2025_sentry_nav/actions/workflows/ci.yml/badge.svg?branch=humble)](https://github.com/LihanChen2004/pb2025_sentry_nav/actions/workflows/ci.yml)
 
 > **仍在开发中，更新频率较快且不稳定，不考虑向前兼容。请谨慎使用**
 
@@ -67,7 +67,7 @@
     ```
 
     ```zsh
-    git clone --recursive https://github.com/LihanChen2004/pb_cmu_navigation.git
+    git clone --recursive https://github.com/LihanChen2004/pb2025_sentry_nav.git
     ```
 
 3. 安装依赖

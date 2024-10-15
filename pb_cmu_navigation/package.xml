@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>pb_cmu_navigation</name>
+  <name>pb2025_sentry_nav</name>
   <version>0.0.0</version>
   <description>TODO: Package description</description>
   <maintainer email="lihanchen2004@163.com">Lihan Chen</maintainer>
