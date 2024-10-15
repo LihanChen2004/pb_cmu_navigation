@@ -4,3 +4,6 @@
 [submodule "point_lio"]
 	path = point_lio
 	url = https://github.com/LihanChen2004/Point-LIO
+[submodule "pb_omni_pid_pursuit_controller"]
+	path = pb_omni_pid_pursuit_controller
+	url = https://github.com/LihanChen2004/pb_omni_pid_pursuit_controller.git

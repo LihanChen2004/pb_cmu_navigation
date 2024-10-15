@@ -6,8 +6,7 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
-
+from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
 
@@ -23,14 +22,15 @@ def generate_launch_description():
     map_yaml_file = LaunchConfiguration("map")
     use_sim_time = LaunchConfiguration("use_sim_time")
     params_file = LaunchConfiguration("params_file")
+    autostart = LaunchConfiguration("autostart")
+    use_composition = LaunchConfiguration("use_composition")
     use_respawn = LaunchConfiguration("use_respawn")
 
     # Launch configuration variables specific to simulation
     rviz_config_file = LaunchConfiguration("rviz_config_file")
     use_rviz = LaunchConfiguration("use_rviz")
 
-    map_yaml_file = PathJoinSubstitution([bringup_dir, "map", world]), ".yaml"
-    prior_pcd_file = PathJoinSubstitution([bringup_dir, "pcd", "simulation", world]), ".pcd"
+    prior_pcd_file = [bringup_dir, "/pcd", "/simulation/", world, ".pcd"]
     point_lio_config_file = os.path.join(bringup_dir, "config", "simulation", "point_lio.yaml")
 
     remappings = [("/tf", "tf"), ("/tf_static", "tf_static")]
@@ -39,17 +39,25 @@ def generate_launch_description():
     declare_world_cmd = DeclareLaunchArgument(
         "world",
         default_value="rmul_2024",
-        description="Select world: 'rmul_2024' or 'rmuc_2024' (map file share the same name as the this parameter)"
+        description="Select world: 'rmul_2024' or 'rmuc_2024' (map file share the same name as the this parameter)",
     )
 
     declare_namespace_cmd = DeclareLaunchArgument(
-        "namespace", default_value="red_standard_robot1", description="Top-level namespace"
+        "namespace",
+        default_value="red_standard_robot1",
+        description="Top-level namespace",
     )
 
     declare_use_namespace_cmd = DeclareLaunchArgument(
         "use_namespace",
         default_value="true",
         description="Whether to apply a namespace to the navigation stack",
+    )
+
+    declare_map_yaml_cmd = DeclareLaunchArgument(
+        "map",
+        default_value=[bringup_dir, "/map/", world, ".yaml"],
+        description="Full path to map file to load",
     )
 
     declare_use_sim_time_cmd = DeclareLaunchArgument(
@@ -60,8 +68,22 @@ def generate_launch_description():
 
     declare_params_file_cmd = DeclareLaunchArgument(
         "params_file",
-        default_value=os.path.join(bringup_dir, "config", "simulation", "cmu_nav_params.yaml"),
+        default_value=os.path.join(
+            bringup_dir, "config", "simulation", "nav2_params.yaml"
+        ),
         description="Full path to the ROS2 parameters file to use for all launched nodes",
+    )
+
+    declare_autostart_cmd = DeclareLaunchArgument(
+        "autostart",
+        default_value="true",
+        description="Automatically startup the nav2 stack",
+    )
+
+    declare_use_composition_cmd = DeclareLaunchArgument(
+        "use_composition",
+        default_value="True",
+        description="Whether to use composed bringup",
     )
 
     declare_use_respawn_cmd = DeclareLaunchArgument(
@@ -72,7 +94,7 @@ def generate_launch_description():
 
     declare_rviz_config_file_cmd = DeclareLaunchArgument(
         "rviz_config_file",
-        default_value=os.path.join(bringup_dir, "rviz", "cmu_nav.rviz"),
+        default_value=os.path.join(bringup_dir, "rviz", "nav2_namespaced_view.rviz"),
         description="Full path to the RVIZ config file to use",
     )
 
@@ -104,7 +126,10 @@ def generate_launch_description():
         name="point_lio",
         output="screen",
         namespace=namespace,
-        parameters=[point_lio_config_file, {"prior_pcd.prior_pcd_map_path": prior_pcd_file}],
+        parameters=[
+            point_lio_config_file,
+            {"prior_pcd.prior_pcd_map_path": prior_pcd_file},
+        ],
         remappings=remappings,
     )
 
@@ -127,23 +152,10 @@ def generate_launch_description():
             "map": map_yaml_file,
             "use_sim_time": use_sim_time,
             "params_file": params_file,
+            "autostart": autostart,
+            "use_composition": use_composition,
             "use_respawn": use_respawn,
         }.items(),
-    )
-
-    start_joy = Node(
-        package="joy",
-        executable="joy_node",
-        name="ps3_joy",
-        output="screen",
-        namespace=namespace,
-        parameters=[
-            {
-                "dev": "/dev/input/js0",
-                "deadzone": 0.12,
-                "autorepeat_rate": 0.0,
-            }
-        ],
     )
 
     # In the future, the transform will be provided by relocalization module
@@ -180,9 +192,11 @@ def generate_launch_description():
     ld.add_action(declare_namespace_cmd)
     ld.add_action(declare_use_namespace_cmd)
     ld.add_action(declare_world_cmd)
+    ld.add_action(declare_map_yaml_cmd)
     ld.add_action(declare_use_sim_time_cmd)
     ld.add_action(declare_params_file_cmd)
-
+    ld.add_action(declare_autostart_cmd)
+    ld.add_action(declare_use_composition_cmd)
     ld.add_action(declare_rviz_config_file_cmd)
     ld.add_action(declare_use_rviz_cmd)
     ld.add_action(declare_use_respawn_cmd)
@@ -192,7 +206,6 @@ def generate_launch_description():
     ld.add_action(start_point_lio_node)
     ld.add_action(start_map_trans_publisher)
     ld.add_action(bringup_cmd)
-    ld.add_action(start_joy)
     ld.add_action(rviz_cmd)
 
     return ld

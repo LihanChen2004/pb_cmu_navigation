@@ -12,9 +12,6 @@ Panels:
   - Class: rviz_common/Tool Properties
     Expanded:
       - /Waypoint1
-      - /Goalpoint1
-      - /2D Pose Estimate1
-      - /2D Goal Pose1
     Name: Tool Properties
     Splitter Ratio: 0.5886790156364441
   - Class: rviz_common/Views
@@ -75,48 +72,6 @@ Visualization Manager:
       Show Names: false
       Tree:
       Update Interval: 0
-      Value: true
-    - Alpha: 0.5
-      Class: rviz_default_plugins/Map
-      Color Scheme: map
-      Draw Behind: true
-      Enabled: true
-      Name: Map
-      Topic:
-        Depth: 1
-        Durability Policy: Transient Local
-        Filter size: 10
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: <robot_namespace>/map
-      Update Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: <robot_namespace>/map_updates
-      Use Timestamp: false
-      Value: true
-    - Alpha: 0.7
-      Class: rviz_default_plugins/Map
-      Color Scheme: costmap
-      Draw Behind: false
-      Enabled: true
-      Name: GlobalCostmap
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        Filter size: 10
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: <robot_namespace>/global_costmap/costmap
-      Update Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: <robot_namespace>/global_costmap/costmap_updates
-      Use Timestamp: false
       Value: true
     - Alpha: 0.5
       Autocompute Intensity Bounds: true
@@ -257,39 +212,13 @@ Visualization Manager:
     - Alpha: 1
       Buffer Length: 1
       Class: rviz_default_plugins/Path
-      Color: 255; 0; 0
-      Enabled: true
-      Head Diameter: 0.02
-      Head Length: 0.02
-      Length: 0.3
-      Line Style: Lines
-      Line Width: 0.03
-      Name: Nav2GlobalPath
-      Offset:
-        X: 0
-        Y: 0
-        Z: 0
-      Pose Color: 255; 85; 255
-      Pose Style: Arrows
-      Radius: 0.03
-      Shaft Diameter: 0.005
-      Shaft Length: 0.02
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: <robot_namespace>/plan
-    - Alpha: 1
-      Buffer Length: 1
-      Class: rviz_default_plugins/Path
       Color: 53; 132; 228
       Enabled: true
-      Head Diameter: 0.30000001192092896
-      Head Length: 0.20000000298023224
-      Length: 0.30000001192092896
+      Head Diameter: 0.3
+      Head Length: 0.2
+      Length: 0.3
       Line Style: Billboards
-      Line Width: 0.05000000074505806
+      Line Width: 0.1
       Name: CMULocalPath
       Offset:
         X: 0
@@ -373,27 +302,6 @@ Visualization Manager:
         History Policy: Keep Last
         Reliability Policy: Reliable
         Value: <robot_namespace>/waypoint
-    - Class: goalpoint_rviz_plugin/GoalpointTool
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: <robot_namespace>/goalpoint
-    - Class: rviz_default_plugins/SetInitialPose
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: <robot_namespace>/initialpose
-    - Class: rviz_default_plugins/SetGoal
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: <robot_namespace>/goal_pose
   Transformation:
     Current:
       Class: rviz_default_plugins/TF
