@@ -2,17 +2,24 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>pb2025_nav_bringup</name>
-  <version>0.0.0</version>
+  <version>0.0.1</version>
   <description>pb2025_nav_bringup</description>
   <maintainer email="lihanchen2004@163.com">Lihan Chen</maintainer>
   <license>MIT</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
+  <depend>launch_ros</depend>
   <depend>pb2025_sentry_nav</depend>
-  <depend>livox_ros_driver2</depend>
-  <depend>ign_sim_pointcloud_tool</depend>
-  <depend>point_lio</depend>
+  <depend>nav2_common</depend>
+  <depend>slam_toolbox</depend>
+
+  <test_depend>ament_lint_common</test_depend>
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_cmake_gtest</test_depend>
+  <test_depend>ament_cmake_pytest</test_depend>
+  <test_depend>launch</test_depend>
+  <test_depend>launch_testing</test_depend>
 
   <export>
     <build_type>ament_cmake</build_type>
