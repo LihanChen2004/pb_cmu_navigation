@@ -11,13 +11,6 @@ jobs:
     container:
       image: rostooling/setup-ros-docker:ubuntu-jammy-ros-humble-desktop-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup ROS 2
-        uses: ros-tooling/setup-ros@v0.7
-        with:
-          required-ros-distributions: humble
-
       - name: Install Livox SDK
         run: |
           git clone https://github.com/Livox-SDK/Livox-SDK2.git
