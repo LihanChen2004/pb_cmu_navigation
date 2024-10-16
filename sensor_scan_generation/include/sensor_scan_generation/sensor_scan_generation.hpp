@@ -35,8 +35,8 @@ private:
     const std::string & child_frame, const rclcpp::Time & stamp);
 
   void publishOdometry(
-    const tf2::Transform & transform, nav_msgs::msg::Odometry::ConstSharedPtr odom_in, const std::string & child_frame,
-    const rclcpp::Time & stamp);
+    const tf2::Transform & transform, nav_msgs::msg::Odometry::ConstSharedPtr odom_in,
+    const std::string & child_frame, const rclcpp::Time & stamp);
 
   std::string lidar_frame_;
   std::string vehicle_base_frame_;
@@ -58,6 +58,7 @@ private:
 
   bool gimbal_to_lidar_initialized_;
   tf2::Transform tf_gimbal_to_lidar_;
+  tf2::Transform tf_lidar_odom_to_odom;
 };
 
 }  // namespace sensor_scan_generation

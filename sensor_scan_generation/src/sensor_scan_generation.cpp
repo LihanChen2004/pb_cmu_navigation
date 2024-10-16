@@ -61,6 +61,7 @@ void SensorScanGenerationNode::laserCloudAndOdometryHandler(
   if (!gimbal_to_lidar_initialized_) {
     try {
       tf_gimbal_to_lidar_ = getTransform(lidar_frame_, vel_ref_frame_, pcd_msg->header.stamp);
+      tf_lidar_odom_to_odom = tf_gimbal_to_lidar_.inverse();
       gimbal_to_lidar_initialized_ = true;
     } catch (tf2::TransformException & ex) {
       RCLCPP_WARN(this->get_logger(), "%s", ex.what());
@@ -79,11 +80,13 @@ void SensorScanGenerationNode::laserCloudAndOdometryHandler(
   tf2::Transform tf_odom_to_lidar;
   tf2::fromMsg(odometry_msg->pose.pose, tf_odom_to_lidar);
 
-  tf2::Transform tf_odom_to_chassis = tf_odom_to_lidar * tf_chassis_to_lidar;
-  tf2::Transform tf_odom_to_gimbal = tf_odom_to_lidar * tf_gimbal_to_lidar_;
+  tf2::Transform tf_odom_to_chassis =
+    tf_lidar_odom_to_odom * tf_odom_to_lidar * tf_chassis_to_lidar;
+  tf2::Transform tf_odom_to_gimbal = tf_lidar_odom_to_odom * tf_odom_to_lidar * tf_gimbal_to_lidar_;
 
   // Publish transformations and odometry
-  publishTransform(tf_odom_to_chassis, odometry_msg->header.frame_id, vehicle_base_frame_, pcd_msg->header.stamp);
+  publishTransform(
+    tf_odom_to_chassis, odometry_msg->header.frame_id, vehicle_base_frame_, pcd_msg->header.stamp);
   publishOdometry(tf_odom_to_gimbal, odometry_msg, vel_ref_frame_, pcd_msg->header.stamp);
 
   // Transform point cloud (odom -> lidar)
@@ -98,7 +101,6 @@ void SensorScanGenerationNode::laserCloudAndOdometryHandler(
   scan_data.header.frame_id = lidar_frame_;
   pub_laser_cloud_->publish(scan_data);
 }
-
 
 tf2::Transform SensorScanGenerationNode::getTransform(
   const std::string & target_frame, const std::string & source_frame, const rclcpp::Time & time)
@@ -128,8 +130,8 @@ void SensorScanGenerationNode::publishTransform(
 }
 
 void SensorScanGenerationNode::publishOdometry(
-  const tf2::Transform & transform, nav_msgs::msg::Odometry::ConstSharedPtr odom_in, const std::string & child_frame,
-  const rclcpp::Time & stamp)
+  const tf2::Transform & transform, nav_msgs::msg::Odometry::ConstSharedPtr odom_in,
+  const std::string & child_frame, const rclcpp::Time & stamp)
 {
   nav_msgs::msg::Odometry out;
   out.header.stamp = stamp;
@@ -146,12 +148,15 @@ void SensorScanGenerationNode::publishOdometry(
   static auto previous_time = std::chrono::steady_clock::now();
   const auto current_time = std::chrono::steady_clock::now();
 
-  const double dt = std::chrono::duration_cast<std::chrono::nanoseconds>(current_time - previous_time).count() * 1e-9;
+  const double dt =
+    std::chrono::duration_cast<std::chrono::nanoseconds>(current_time - previous_time).count() *
+    1e-9;
 
   if (dt > 0) {
     const auto linear_velocity = (transform.getOrigin() - previous_transform.getOrigin()) / dt;
 
-    const tf2::Quaternion q_diff = transform.getRotation() * previous_transform.getRotation().inverse();
+    const tf2::Quaternion q_diff =
+      transform.getRotation() * previous_transform.getRotation().inverse();
     const auto angular_velocity = q_diff.getAxis() * q_diff.getAngle() / dt;
 
     out.twist.twist.linear.x = linear_velocity.x();
@@ -167,7 +172,6 @@ void SensorScanGenerationNode::publishOdometry(
 
   pub_chassis_odometry_->publish(out);
 }
-
 
 }  // namespace sensor_scan_generation
 

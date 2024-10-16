@@ -135,7 +135,7 @@ world:=rmul_2024
 
 ## TODO
 
-- [ ] 优化 lidar_odom 和 odom 的关系。目前可以看到机器人底盘实际上是沉在地图下的，雷达与地图高度重合
+- [x] 优化 lidar_odom 和 odom 的关系。目前可以看到机器人底盘实际上是沉在地图下的，雷达与地图高度重合
 
 - [ ] 加入 [fast_gicp](https://github.com/koide3/fast_gicp) 的重定位模块
 
