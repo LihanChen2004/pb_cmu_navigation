@@ -165,6 +165,7 @@ def generate_launch_description():
         name="map2odom_trans_publisher",
         namespace=namespace,
         remappings=remappings,
+        parameters=[{"use_sim_time": use_sim_time}],
         arguments=[
             "--x",
             "0.0",

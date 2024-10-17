@@ -87,8 +87,8 @@
 
     先验点云用于 point_lio 初始化，由于点云文件体积较大，故不放在 git 中，可前往 [FlowUs](https://flowus.cn/lihanchen/share/87f81771-fc0c-4e09-a768-db01f4c136f4?code=4PP1RS) 下载。也可以选择不使用先验点云，只需要到 [point_lio.yaml](./pb2025_nav_bringup/config/simulation/point_lio.yaml) 中将 `prior_pcd.enable` 设置为 `False` 即可。
 
-    > [!NOTE]  
-    > 当前 point_lio with prior_pcd 在 rmuc_2024 的效果并不好，比不带先验点云更容易飘，待 Debug 优化。
+> [!NOTE]  
+> 当前 point_lio with prior_pcd 在 rmuc_2024 的效果并不好，比不带先验点云更容易飘，待 Debug 优化。
 
 ## 三. 运行
 

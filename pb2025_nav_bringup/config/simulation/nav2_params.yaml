@@ -15,6 +15,7 @@ sensor_scan_generation:
 
 amcl:
   ros__parameters:
+    use_sim_time: true
     alpha1: 0.2
     alpha2: 0.2
     alpha3: 0.2
@@ -55,6 +56,7 @@ amcl:
 
 bt_navigator:
   ros__parameters:
+    use_sim_time: true
     global_frame: map
     robot_base_frame: gimbal_yaw
     odom_topic: odometry
@@ -117,6 +119,7 @@ bt_navigator:
 
 controller_server:
   ros__parameters:
+    use_sim_time: true
     odom_topic: odometry
     controller_frequency: 20.0
     min_x_velocity_threshold: 0.001
@@ -154,7 +157,7 @@ controller_server:
       use_rotate_to_heading: false
       use_rotate_to_heading_treshold: 0.1
       min_approach_linear_velocity: 0.5
-      approach_velocity_scaling_dist: 1.5
+      approach_velocity_scaling_dist: 1.0
       min_translation_speed: -2.5
       max_translation_speed: 2.5
       min_rotation_speed: -3.0
@@ -163,6 +166,7 @@ controller_server:
 local_costmap:
   local_costmap:
     ros__parameters:
+      use_sim_time: true
       update_frequency: 10.0
       publish_frequency: 5.0
       global_frame: odom
@@ -208,6 +212,7 @@ local_costmap:
 global_costmap:
   global_costmap:
     ros__parameters:
+      use_sim_time: true
       update_frequency: 1.0
       publish_frequency: 1.0
       global_frame: map
@@ -250,6 +255,7 @@ map_server:
 
 map_saver:
   ros__parameters:
+    use_sim_time: true
     save_map_timeout: 5.0
     free_thresh_default: 0.25
     occupied_thresh_default: 0.65
@@ -257,6 +263,7 @@ map_saver:
 
 planner_server:
   ros__parameters:
+    use_sim_time: true
     expected_planner_frequency: 20.0
     planner_plugins: ["GridBased"]
     GridBased:
@@ -267,6 +274,7 @@ planner_server:
 
 smoother_server:
   ros__parameters:
+    use_sim_time: true
     smoother_plugins: ["simple_smoother"]
     simple_smoother:
       plugin: "nav2_smoother::SimpleSmoother"
@@ -276,6 +284,7 @@ smoother_server:
 
 behavior_server:
   ros__parameters:
+    use_sim_time: true
     local_costmap_topic: local_costmap/costmap_raw
     global_costmap_topic: global_costmap/costmap_raw
     local_footprint_topic: local_costmap/published_footprint
@@ -303,6 +312,7 @@ behavior_server:
 
 waypoint_follower:
   ros__parameters:
+    use_sim_time: true
     loop_rate: 20
     stop_on_failure: false
     waypoint_task_executor_plugin: "wait_at_waypoint"
@@ -313,6 +323,7 @@ waypoint_follower:
 
 velocity_smoother:
   ros__parameters:
+    use_sim_time: true
     smoothing_frequency: 20.0
     scale_velocities: False
     feedback: "OPEN_LOOP"
