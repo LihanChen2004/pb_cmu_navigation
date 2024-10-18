@@ -155,22 +155,6 @@ Visualization Manager:
         Value: <robot_namespace>/map_updates
       Use Timestamp: false
       Value: true
-    - Alpha: 1
-      Class: nav2_rviz_plugins/ParticleCloud
-      Color: 0; 180; 0
-      Enabled: true
-      Max Arrow Length: 0.30000001192092896
-      Min Arrow Length: 0.019999999552965164
-      Name: Amcl Particle Swarm
-      Shape: Arrow (Flat)
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        Filter size: 10
-        History Policy: Keep Last
-        Reliability Policy: Best Effort
-        Value: <robot_namespace>/particle_cloud
-      Value: true
     - Class: rviz_common/Group
       Displays:
         - Alpha: 0.30000001192092896

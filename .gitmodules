@@ -7,3 +7,6 @@
 [submodule "pb_omni_pid_pursuit_controller"]
 	path = pb_omni_pid_pursuit_controller
 	url = https://github.com/LihanChen2004/pb_omni_pid_pursuit_controller.git
+[submodule "small_gicp_relocalization"]
+	path = small_gicp_relocalization
+	url = https://github.com/LihanChen2004/small_gicp_relocalization.git

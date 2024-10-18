@@ -31,6 +31,8 @@
 
 6. 使用 NAV2 的 Global Planner 作为全局路径规划器，再从 Global Plan 中裁剪出目标点，交由 CMU 的 Local Planner 进行局部路径规划。
 
+7. 加入 [small_gicp](https://github.com/koide3/small_gicp) 作为重定位模块，动态更新 `map -> odom` 的变换。在 RMUC 场景下每帧点云对齐时间仅 0.001s。
+
 > [!NOTE]  
 > 我们做出了艰难的决定
 >
@@ -137,7 +139,7 @@ world:=rmul_2024
 
 - [x] 优化 lidar_odom 和 odom 的关系。目前可以看到机器人底盘实际上是沉在地图下的，雷达与地图高度重合
 
-- [ ] 加入 [fast_gicp](https://github.com/koide3/fast_gicp) 的重定位模块
+- [x] 加入 [small_gicp](https://github.com/koide3/small_gicp) 的重定位模块
 
 - [ ] 优化 [pb_omni_pid_pursuit_controller](https://github.com/LihanChen2004/pb_omni_pid_pursuit_controller)，加入对高曲率路径的速度限制处理
 

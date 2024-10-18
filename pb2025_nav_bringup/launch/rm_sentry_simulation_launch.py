@@ -150,6 +150,7 @@ def generate_launch_description():
             "namespace": namespace,
             "use_namespace": use_namespace,
             "map": map_yaml_file,
+            "prior_pcd_file": prior_pcd_file,
             "use_sim_time": use_sim_time,
             "params_file": params_file,
             "autostart": autostart,
@@ -158,35 +159,6 @@ def generate_launch_description():
         }.items(),
     )
 
-    # In the future, the transform will be provided by relocalization module
-    start_map_trans_publisher = Node(
-        package="tf2_ros",
-        executable="static_transform_publisher",
-        name="map2odom_trans_publisher",
-        namespace=namespace,
-        remappings=remappings,
-        parameters=[{"use_sim_time": use_sim_time}],
-        arguments=[
-            "--x",
-            "0.0",
-            "--y",
-            "0.0",
-            "--z",
-            "0",
-            "--roll",
-            "0",
-            "--pitch",
-            "0.0",
-            "--yaw",
-            "0",
-            "--frame-id",
-            "map",
-            "--child-frame-id",
-            "odom",
-        ],
-    )
-
-    # Create the launch description and populate
     ld = LaunchDescription()
 
     # Declare the launch options
@@ -205,7 +177,6 @@ def generate_launch_description():
     # Add the actions to launch all of the navigation nodes
     ld.add_action(start_velodyne_convert_tool)
     ld.add_action(start_point_lio_node)
-    ld.add_action(start_map_trans_publisher)
     ld.add_action(bringup_cmd)
     ld.add_action(rviz_cmd)
 

@@ -20,6 +20,7 @@ def generate_launch_description():
     map_yaml_file = LaunchConfiguration('map')
     use_sim_time = LaunchConfiguration('use_sim_time')
     autostart = LaunchConfiguration('autostart')
+    prior_pcd_file = LaunchConfiguration('prior_pcd_file')
     params_file = LaunchConfiguration('params_file')
     use_composition = LaunchConfiguration('use_composition')
     container_name = LaunchConfiguration('container_name')
@@ -27,7 +28,7 @@ def generate_launch_description():
     use_respawn = LaunchConfiguration('use_respawn')
     log_level = LaunchConfiguration('log_level')
 
-    lifecycle_nodes = ['map_server', 'amcl']
+    lifecycle_nodes = ['map_server']
 
     # Map fully qualified names to relative ones so the node's namespace can be prepended.
     # In case of the transforms (tf), currently, there doesn't seem to be a better alternative
@@ -72,6 +73,11 @@ def generate_launch_description():
         default_value='false',
         description='Use simulation (Gazebo) clock if true')
 
+    declare_prior_pcd_file_cmd = DeclareLaunchArgument(
+        'prior_pcd_file',
+        default_value='',
+        description='Full path to prior PCD file to load')
+
     declare_params_file_cmd = DeclareLaunchArgument(
         'params_file',
         default_value=os.path.join(bringup_dir, 'params', 'nav2_params.yaml'),
@@ -111,13 +117,13 @@ def generate_launch_description():
                 arguments=['--ros-args', '--log-level', log_level],
                 remappings=remappings),
             Node(
-                package='nav2_amcl',
-                executable='amcl',
-                name='amcl',
+                package='small_gicp_relocalization',
+                executable='small_gicp_relocalization_node',
+                name='small_gicp_relocalization',
                 output='screen',
                 respawn=use_respawn,
                 respawn_delay=2.0,
-                parameters=[configured_params],
+                parameters=[configured_params, {'prior_pcd_file': prior_pcd_file}],
                 arguments=['--ros-args', '--log-level', log_level],
                 remappings=remappings),
             Node(
@@ -143,10 +149,10 @@ def generate_launch_description():
                 parameters=[configured_params],
                 remappings=remappings),
             ComposableNode(
-                package='nav2_amcl',
-                plugin='nav2_amcl::AmclNode',
-                name='amcl',
-                parameters=[configured_params],
+                package='small_gicp_relocalization',
+                plugin='small_gicp_relocalization::SmallGicpRelocalizationNode',
+                name='small_gicp_relocalization',
+                parameters=[configured_params, {'prior_pcd_file': prior_pcd_file}],
                 remappings=remappings),
             ComposableNode(
                 package='nav2_lifecycle_manager',
@@ -169,6 +175,7 @@ def generate_launch_description():
     ld.add_action(declare_namespace_cmd)
     ld.add_action(declare_map_yaml_cmd)
     ld.add_action(declare_use_sim_time_cmd)
+    ld.add_action(declare_prior_pcd_file_cmd)
     ld.add_action(declare_params_file_cmd)
     ld.add_action(declare_autostart_cmd)
     ld.add_action(declare_use_composition_cmd)
